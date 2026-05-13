@@ -108,6 +108,7 @@ namespace Multi_Library_Management_Api.Repository
                         Id = ts.Id,
                         TableNumber = ts.TableNumber,
                         SeatNumber = ts.SeatNumber,
+                        FloorId = ts.FloorId,
                         FloorName = ts.Floor.Name,
                         LibraryName = ts.Library.Name,
                         IsOccupied = ts.IsOccupied,

@@ -73,6 +73,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int Id { get; set; }
         public string TableNumber { get; set; } = string.Empty;
         public string SeatNumber { get; set; } = string.Empty;
+        public int FloorId { get; set; }
         public string FloorName { get; set; } = string.Empty;
         public string LibraryName { get; set; } = string.Empty;
         public bool IsOccupied { get; set; }

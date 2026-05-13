@@ -146,9 +146,11 @@ namespace Multi_Library_Management_Api.Repository
                 var items = await CommonQuery.ApplyPagination(q, query.PageNumber, query.PageSize)
                     .Select(s => new StudentListDto
                     {
-                        Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, Mobile = s.Mobile,
+                        Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, 
+                        Mobile = s.Mobile, Address = s.Address,
                         LibraryName = s.Library.Name, RFIDCode = s.RFIDCode, Photo = s.Photo, 
-                        DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, IsActive = s.IsActive
+                        DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, 
+                        DOB = s.DOB, IsActive = s.IsActive
                     }).ToListAsync();
 
                 response.Data = CommonQuery.BuildPagedResult(items, totalCount, query.PageNumber, query.PageSize);

@@ -58,11 +58,13 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string FullName { get; set; } = string.Empty;
         public string? FatherName { get; set; }
         public string Mobile { get; set; } = string.Empty;
+        public string? Address { get; set; }
         public string LibraryName { get; set; } = string.Empty;
         public string? RFIDCode { get; set; }
         public string? Photo { get; set; }
         public string? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
+        public DateTime? DOB { get; set; }
         public bool IsActive { get; set; }
     }
 
