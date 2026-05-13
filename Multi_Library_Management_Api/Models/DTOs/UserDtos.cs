@@ -11,6 +11,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int RoleId { get; set; }
         public int? LibraryId { get; set; }
         public bool IsSuperadmin { get; set; }
+        public IFormFile? ProfileImageFile { get; set; }
     }
 
     public class UpdateUserDto
@@ -23,6 +24,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int RoleId { get; set; }
         public int? LibraryId { get; set; }
         public bool IsSuperadmin { get; set; }
+        public IFormFile? ProfileImageFile { get; set; }
         public bool IsActive { get; set; }
     }
 
@@ -37,6 +39,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int? LibraryId { get; set; }
         public string? LibraryName { get; set; }
         public bool IsSuperadmin { get; set; }
+        public string? ProfileImage { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
     }
@@ -50,6 +53,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string RoleName { get; set; } = string.Empty;
         public string? LibraryName { get; set; }
         public bool IsSuperadmin { get; set; }
+        public string? ProfileImage { get; set; }
         public bool IsActive { get; set; }
     }
 }

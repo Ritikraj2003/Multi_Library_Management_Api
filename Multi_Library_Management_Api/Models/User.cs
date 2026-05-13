@@ -11,6 +11,7 @@ namespace Multi_Library_Management_Api.Models
         public int RoleId { get; set; }
         public int? LibraryId { get; set; }
         public bool IsActive { get; set; }
+        public string? ProfileImage { get; set; }
         public DateTime CreatedDate { get; set; }
 
         // Navigation Properties

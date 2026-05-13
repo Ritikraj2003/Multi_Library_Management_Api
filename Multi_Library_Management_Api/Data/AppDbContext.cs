@@ -36,6 +36,9 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(l => l.Pincode).HasMaxLength(10);
                 entity.Property(l => l.Mobile).HasMaxLength(20);
                 entity.Property(l => l.Email).HasMaxLength(200);
+                entity.Property(l => l.LibraryIcon).HasMaxLength(500);
+                entity.Property(l => l.DocumentImage).HasMaxLength(500);
+                entity.Property(l => l.DocumentType).HasMaxLength(100);
                 entity.Property(l => l.IsActive).HasDefaultValue(true);
                 entity.Property(l => l.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
             });
@@ -90,6 +93,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Password).IsRequired().HasMaxLength(255);
                 entity.Property(u => u.IsSuperadmin).HasDefaultValue(false);
+                entity.Property(u => u.ProfileImage).HasMaxLength(500);
                 entity.Property(u => u.IsActive).HasDefaultValue(true);
                 entity.Property(u => u.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
 

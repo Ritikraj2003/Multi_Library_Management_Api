@@ -13,14 +13,14 @@ namespace Multi_Library_Management_Api.Controllers
         public UserController(IUserRepository repo) => _repo = repo;
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
+        public async Task<IActionResult> Create([FromForm] CreateUserDto dto)
         {
             var result = await _repo.CreateAsync(dto);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] UpdateUserDto dto)
+        public async Task<IActionResult> Update([FromForm] UpdateUserDto dto)
         {
             var result = await _repo.UpdateAsync(dto);
             return Ok(result);

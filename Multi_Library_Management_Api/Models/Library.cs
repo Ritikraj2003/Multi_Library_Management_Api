@@ -10,6 +10,9 @@ namespace Multi_Library_Management_Api.Models
         public string? Pincode { get; set; }
         public string? Mobile { get; set; }
         public string? Email { get; set; }
+        public string? LibraryIcon { get; set; }
+        public string? DocumentImage { get; set; }
+        public string? DocumentType { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
 

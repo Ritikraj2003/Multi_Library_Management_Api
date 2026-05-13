@@ -58,6 +58,7 @@ namespace Multi_Library_Management_Api.Repository
                     RoleName = user.Role.Name,
                     LibraryId = user.LibraryId,
                     LibraryName = user.Library?.Name,
+                    LibraryIcon = user.Library?.LibraryIcon,
                     IsSuperadmin = user.IsSuperadmin,
                     Permissions = permissions
                 };

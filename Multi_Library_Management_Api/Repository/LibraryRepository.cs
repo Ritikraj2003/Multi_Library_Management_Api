@@ -10,10 +10,30 @@ namespace Multi_Library_Management_Api.Repository
     public class LibraryRepository : ILibraryRepository
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public LibraryRepository(AppDbContext context)
+        public LibraryRepository(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
+        }
+
+        private async Task<string?> SaveFileAsync(IFormFile? file, string subFolder)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "uploads", subFolder);
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Path.Combine("uploads", subFolder, fileName).Replace("\\", "/");
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -25,7 +45,11 @@ namespace Multi_Library_Management_Api.Repository
 
             try
             {
-                // 1. Create Library
+                // 1. Save Files
+                var iconPath = await SaveFileAsync(dto.LibraryIconFile, "library");
+                var docPath = await SaveFileAsync(dto.DocumentImageFile, "library");
+
+                // 2. Create Library
                 var library = new Library
                 {
                     Name = dto.Name,
@@ -35,6 +59,9 @@ namespace Multi_Library_Management_Api.Repository
                     Pincode = dto.Pincode,
                     Mobile = dto.Mobile,
                     Email = dto.Email,
+                    LibraryIcon = iconPath,
+                    DocumentImage = docPath,
+                    DocumentType = dto.DocumentType,
                     IsActive = true,
                     CreatedDate = DateTime.UtcNow
                 };
@@ -123,6 +150,15 @@ namespace Multi_Library_Management_Api.Repository
                     return response;
                 }
 
+                if (dto.LibraryIconFile != null)
+                {
+                    library.LibraryIcon = await SaveFileAsync(dto.LibraryIconFile, "library");
+                }
+                if (dto.DocumentImageFile != null)
+                {
+                    library.DocumentImage = await SaveFileAsync(dto.DocumentImageFile, "library");
+                }
+
                 library.Name = dto.Name;
                 library.Address = dto.Address;
                 library.City = dto.City;
@@ -130,6 +166,7 @@ namespace Multi_Library_Management_Api.Repository
                 library.Pincode = dto.Pincode;
                 library.Mobile = dto.Mobile;
                 library.Email = dto.Email;
+                library.DocumentType = dto.DocumentType;
                 library.IsActive = dto.IsActive;
 
                 await _context.SaveChangesAsync();
@@ -235,9 +272,15 @@ namespace Multi_Library_Management_Api.Repository
                     {
                         Id = l.Id,
                         Name = l.Name,
+                        Address = l.Address,
                         City = l.City,
+                        State = l.State,
+                        Pincode = l.Pincode,
                         Mobile = l.Mobile,
                         Email = l.Email,
+                        LibraryIcon = l.LibraryIcon,
+                        DocumentImage = l.DocumentImage,
+                        DocumentType = l.DocumentType,
                         IsActive = l.IsActive
                     }).ToListAsync();
 
@@ -264,6 +307,9 @@ namespace Multi_Library_Management_Api.Repository
             Pincode = l.Pincode,
             Mobile = l.Mobile,
             Email = l.Email,
+            LibraryIcon = l.LibraryIcon,
+            DocumentImage = l.DocumentImage,
+            DocumentType = l.DocumentType,
             IsActive = l.IsActive,
             CreatedDate = l.CreatedDate
         };

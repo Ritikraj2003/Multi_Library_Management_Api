@@ -10,8 +10,29 @@ namespace Multi_Library_Management_Api.Repository
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public UserRepository(AppDbContext context) => _context = context;
+        public UserRepository(AppDbContext context, IWebHostEnvironment environment)
+        {
+            _context = context;
+            _environment = environment;
+        }
+
+        private async Task<string> SaveFileAsync(IFormFile file, string subDirectory)
+        {
+            var uploadsPath = Path.Combine(_environment.WebRootPath ?? _environment.ContentRootPath, "uploads", subDirectory);
+            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Path.Combine("uploads", subDirectory, fileName).Replace("\\", "/");
+        }
 
         public async Task<Response<UserResponseDto>> CreateAsync(CreateUserDto dto)
         {
@@ -22,11 +43,18 @@ namespace Multi_Library_Management_Api.Repository
                 {
                     response.Success = false; response.Message = "Email already in use."; return response;
                 }
+                string? profileImage = null;
+                if (dto.ProfileImageFile != null)
+                {
+                    profileImage = await SaveFileAsync(dto.ProfileImageFile, "users");
+                }
+
                 var user = new User
                 {
                     FullName = dto.FullName, Mobile = dto.Mobile, Email = dto.Email,
                     Password = dto.Password, RoleId = dto.RoleId, LibraryId = dto.LibraryId,
                     IsSuperadmin = dto.IsSuperadmin,
+                    ProfileImage = profileImage,
                     IsActive = true, CreatedDate = DateTime.UtcNow
                 };
                 _context.Users.Add(user);
@@ -45,6 +73,11 @@ namespace Multi_Library_Management_Api.Repository
             {
                 var user = await _context.Users.FindAsync(dto.Id);
                 if (user == null) { response.Success = false; response.Message = "User not found."; return response; }
+
+                if (dto.ProfileImageFile != null)
+                {
+                    user.ProfileImage = await SaveFileAsync(dto.ProfileImageFile, "users");
+                }
 
                 user.FullName = dto.FullName; user.Mobile = dto.Mobile; user.Email = dto.Email;
                 user.RoleId = dto.RoleId; user.LibraryId = dto.LibraryId; 
@@ -111,6 +144,7 @@ namespace Multi_Library_Management_Api.Repository
                         RoleName = u.Role.Name,
                         LibraryName = u.Library != null ? u.Library.Name : null,
                         IsSuperadmin = u.IsSuperadmin,
+                        ProfileImage = u.ProfileImage,
                         IsActive = u.IsActive
                     }).ToListAsync();
 
@@ -133,6 +167,7 @@ namespace Multi_Library_Management_Api.Repository
                     RoleId = u.RoleId, RoleName = u.Role.Name,
                     LibraryId = u.LibraryId, LibraryName = u.Library != null ? u.Library.Name : null,
                     IsSuperadmin = u.IsSuperadmin,
+                    ProfileImage = u.ProfileImage,
                     IsActive = u.IsActive, CreatedDate = u.CreatedDate
                 }).FirstOrDefaultAsync();
         }

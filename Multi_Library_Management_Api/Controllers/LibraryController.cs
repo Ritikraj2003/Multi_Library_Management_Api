@@ -13,14 +13,14 @@ namespace Multi_Library_Management_Api.Controllers
         public LibraryController(ILibraryRepository repo) => _repo = repo;
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateLibraryDto dto)
+        public async Task<IActionResult> Create([FromForm] CreateLibraryDto dto)
         {
             var result = await _repo.CreateAsync(dto);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] UpdateLibraryDto dto)
+        public async Task<IActionResult> Update([FromForm] UpdateLibraryDto dto)
         {
             var result = await _repo.UpdateAsync(dto);
             return Ok(result);

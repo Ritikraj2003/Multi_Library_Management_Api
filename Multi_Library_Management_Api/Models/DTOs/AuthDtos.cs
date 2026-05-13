@@ -16,6 +16,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string RoleName { get; set; } = string.Empty;
         public int? LibraryId { get; set; }
         public string? LibraryName { get; set; }
+        public string? LibraryIcon { get; set; }
         public bool IsSuperadmin { get; set; }
         public List<string> Permissions { get; set; } = new();
     }
