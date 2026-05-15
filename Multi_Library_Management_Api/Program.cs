@@ -14,7 +14,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 31)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure());
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null));
 });
 
 // ─── JWT Authentication ────────────────────────────────────────────────────────
@@ -34,6 +37,7 @@ builder.Services.AddScoped<IStudentRegistrationRepository, StudentRegistrationRe
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IGeneralSettingRepository, GeneralSettingRepository>();
+builder.Services.AddScoped<IRfidAccessRepository, RfidAccessRepository>();
 
 // ─── Controllers ───────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
