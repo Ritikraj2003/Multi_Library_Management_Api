@@ -33,6 +33,7 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentRegistrationRepository, StudentRegistrationRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IGeneralSettingRepository, GeneralSettingRepository>();
 
 // ─── Controllers ───────────────────────────────────────────────────────────────
 builder.Services.AddControllers();

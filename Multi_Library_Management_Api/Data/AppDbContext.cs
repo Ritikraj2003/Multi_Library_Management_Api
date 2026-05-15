@@ -21,6 +21,7 @@ namespace Multi_Library_Management_Api.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<AttendanceLog> AttendanceLogs { get; set; }
         public DbSet<GateAccessLog> GateAccessLogs { get; set; }
+        public DbSet<GeneralSetting> GeneralSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -252,6 +253,20 @@ namespace Multi_Library_Management_Api.Data
                 entity.HasOne(g => g.Student)
                       .WithMany(s => s.GateAccessLogs)
                       .HasForeignKey(g => g.StudentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+            
+            // ─── GeneralSettings ──────────────────────────────────────────────
+            modelBuilder.Entity<GeneralSetting>(entity =>
+            {
+                entity.HasKey(gs => gs.Id);
+                entity.Property(gs => gs.Key).IsRequired().HasMaxLength(100);
+                entity.Property(gs => gs.Value).IsRequired();
+                entity.Property(gs => gs.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                entity.HasOne(gs => gs.Library)
+                      .WithMany()
+                      .HasForeignKey(gs => gs.LibraryId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
