@@ -10,7 +10,13 @@ namespace Multi_Library_Management_Api.Repository
     public class StudentRegistrationRepository : IStudentRegistrationRepository
     {
         private readonly AppDbContext _context;
-        public StudentRegistrationRepository(AppDbContext context) => _context = context;
+        private readonly IEmailService _emailService;
+
+        public StudentRegistrationRepository(AppDbContext context, IEmailService emailService)
+        {
+            _context = context;
+            _emailService = emailService;
+        }
 
         public async Task<Response<StudentRegistrationResponseDto>> CreateAsync(CreateStudentRegistrationDto dto)
         {
@@ -67,15 +73,87 @@ namespace Multi_Library_Management_Api.Repository
                         CreatedBy = dto.CreatedBy
                     };
                     _context.Payments.Add(payment);
-
-                    // 6. Global seat status removed as it is now batch-wise
-                    // seat.IsOccupied = true;
                     
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    response.Data = await BuildResponseAsync(registration.Id);
+                    var regDto = await BuildResponseAsync(registration.Id);
+                    response.Data = regDto;
                     response.Success = true; response.Message = "Student registered successfully.";
+
+                    // Send Registration Email with Virtual Card
+                    if (regDto != null && !string.IsNullOrEmpty(student.Email))
+                    {
+                        var library = await _context.Libraries.FindAsync(dto.LibraryId);
+                        string photoUrl = !string.IsNullOrEmpty(student.Photo) ? student.Photo : "";
+                        
+                        string subject = $"Registration Successful - {library?.Name}";
+                        
+                        // Card HTML for attachment and body
+                        string cardHtml = $@"
+                        <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px;'>
+                            <div style='background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(30,60,114,0.3); position: relative; overflow: hidden;'>
+                                <div style='position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;'></div>
+                                
+                                <div style='display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;'>
+                                    <div>
+                                        <h2 style='margin: 0; font-size: 22px; letter-spacing: 1px;'>LIBRARY ID CARD</h2>
+                                        <p style='margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;'>{library?.Name}</p>
+                                    </div>
+                                    <div style='background: #e67e22; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold;'>ACTIVE</div>
+                                </div>
+
+                                <div style='display: flex; gap: 25px; align-items: center;'>
+                                    <div style='width: 110px; height: 110px; background: white; border-radius: 15px; padding: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);'>
+                                        <img src='{(string.IsNullOrEmpty(photoUrl) ? "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" : "https://yourdomain.com/" + photoUrl)}' 
+                                             style='width: 100%; height: 100%; object-fit: cover; border-radius: 12px;'>
+                                    </div>
+                                    <div style='flex: 1;'>
+                                        <p style='margin: 0; font-size: 20px; font-weight: bold;'>{student.FullName}</p>
+                                        <div style='margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;'>
+                                            <div>
+                                                <p style='margin: 0; font-size: 9px; text-transform: uppercase; opacity: 0.7;'>Seat No</p>
+                                                <p style='margin: 1px 0 0 0; font-size: 13px; font-weight: bold;'>{regDto.TableNumber}-{regDto.SeatNumber}</p>
+                                            </div>
+                                            <div>
+                                                <p style='margin: 0; font-size: 9px; text-transform: uppercase; opacity: 0.7;'>Batch</p>
+                                                <p style='margin: 1px 0 0 0; font-size: 13px; font-weight: bold;'>{regDto.BatchName}</p>
+                                            </div>
+                                        </div>
+                                        <div style='margin-top: 10px;'>
+                                            <p style='margin: 0; font-size: 9px; text-transform: uppercase; opacity: 0.7;'>Valid Till</p>
+                                            <p style='margin: 1px 0 0 0; font-size: 13px; font-weight: bold; color: #f1c40f;'>{regDto.DueDate:dd MMM yyyy}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style='margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;'>
+                                    <p style='margin: 0; font-size: 12px; letter-spacing: 2px;'>ID: {student.Id.ToString("D5")}</p>
+                                    <div style='background: white; padding: 5px; border-radius: 5px;'>
+                                        <img src='https://api.qrserver.com/v1/create-qr-code/?size=40x40&data={student.Id}' style='display: block;'>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>";
+
+                        string body = $@"
+                        <div style='font-family: Arial, sans-serif; padding: 20px;'>
+                            <h2 style='color: #2c3e50;'>Registration Confirmed!</h2>
+                            <p>Dear {student.FullName},</p>
+                            <p>Your seat registration for <b>{library?.Name}</b> is successful. Please find your virtual ID card attached to this email.</p>
+                            
+                            {cardHtml}
+
+                            <div style='margin-top: 25px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee;'>
+                                <h4 style='margin: 0 0 10px 0;'>Payment Details</h4>
+                                <p style='margin: 5px 0;'>Amount Paid: <b>₹{dto.MonthlyAmount}</b></p>
+                                <p style='margin: 5px 0;'>Next Due Date: <b style='color: #e74c3c;'>{dto.DueDate:dd MMM yyyy}</b></p>
+                            </div>
+                        </div>";
+                        
+                        byte[] attachmentData = System.Text.Encoding.UTF8.GetBytes(cardHtml);
+                        await _emailService.SendEmailAsync(student.Email, subject, body, dto.LibraryId, attachmentData, "LibraryCard.html");
+                    }
                 }
                 catch (Exception ex) 
                 { 

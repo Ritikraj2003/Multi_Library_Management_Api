@@ -7,6 +7,7 @@ namespace Multi_Library_Management_Api.Models
         public string FullName { get; set; } = string.Empty;
         public string? FatherName { get; set; }
         public string Mobile { get; set; } = string.Empty;
+        public string? Email { get; set; }
         public string? Address { get; set; }
         public string? RFIDCode { get; set; }
         public string? Photo { get; set; } // This will be StudentImage

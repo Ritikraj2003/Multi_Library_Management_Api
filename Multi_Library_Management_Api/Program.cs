@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using Multi_Library_Management_Api.Data;
 using Multi_Library_Management_Api.Extensions;
 using Multi_Library_Management_Api.Interfaces;
+using Multi_Library_Management_Api.Helpers;
 using Multi_Library_Management_Api.Repository;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
@@ -25,6 +26,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // ─── Dependency Injection (Separate Repositories) ───────────────────────────────
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();

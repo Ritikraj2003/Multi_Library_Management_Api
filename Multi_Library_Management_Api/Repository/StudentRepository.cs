@@ -11,11 +11,13 @@ namespace Multi_Library_Management_Api.Repository
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IEmailService _emailService;
 
-        public StudentRepository(AppDbContext context, IWebHostEnvironment env)
+        public StudentRepository(AppDbContext context, IWebHostEnvironment env, IEmailService emailService)
         {
             _context = context;
             _env = env;
+            _emailService = emailService;
         }
 
         private async Task<string?> SaveFileAsync(IFormFile? file, string subFolder)
@@ -50,6 +52,7 @@ namespace Multi_Library_Management_Api.Repository
                     FullName = dto.FullName,
                     FatherName = dto.FatherName,
                     Mobile = dto.Mobile,
+                    Email = dto.Email,
                     Address = dto.Address,
                     RFIDCode = dto.RFIDCode,
                     Photo = photoPath,
@@ -61,6 +64,28 @@ namespace Multi_Library_Management_Api.Repository
                 };
                 _context.Students.Add(student);
                 await _context.SaveChangesAsync();
+
+                // Send Registration Email with Virtual Card
+                if (!string.IsNullOrEmpty(student.Email))
+                {
+                    var library = await _context.Libraries.FindAsync(student.LibraryId);
+                    string photoUrl = !string.IsNullOrEmpty(student.Photo) ? student.Photo : "";
+                    
+                    string subject = $"Welcome to {library?.Name} - Enrollment ID";
+                    string body = $@"
+                    <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;'>
+                        <h2 style='color: #2c3e50;'>Welcome to the Library!</h2>
+                        <p>Dear {student.FullName},</p>
+                        <p>Thank you for joining <b>{library?.Name}</b>. Your basic enrollment is complete.</p>
+                        <p style='font-size: 18px;'><b>Your Enrollment ID: {student.Id}</b></p>
+                        <p>Please use this ID when you visit the library to complete your seat registration and payment.</p>
+                        <br/>
+                        <p>Regards,<br/>{library?.Name} Team</p>
+                    </div>";
+
+                    await _emailService.SendEmailAsync(student.Email, subject, body, student.LibraryId);
+                }
+
                 response.Data = await BuildResponseAsync(student.Id);
                 response.Success = true; response.Message = "Student created.";
             }
@@ -88,6 +113,7 @@ namespace Multi_Library_Management_Api.Repository
                 student.FullName = dto.FullName;
                 student.FatherName = dto.FatherName;
                 student.Mobile = dto.Mobile;
+                student.Email = dto.Email;
                 student.Address = dto.Address;
                 student.RFIDCode = dto.RFIDCode;
                 student.DocumentType = dto.DocumentType;
@@ -147,7 +173,7 @@ namespace Multi_Library_Management_Api.Repository
                     .Select(s => new StudentListDto
                     {
                         Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, 
-                        Mobile = s.Mobile, Address = s.Address,
+                        Mobile = s.Mobile, Email = s.Email, Address = s.Address,
                         LibraryName = s.Library.Name, RFIDCode = s.RFIDCode, Photo = s.Photo, 
                         DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, 
                         DOB = s.DOB, IsActive = s.IsActive
@@ -166,7 +192,7 @@ namespace Multi_Library_Management_Api.Repository
                 {
                     Id = s.Id, LibraryId = s.LibraryId, LibraryName = s.Library.Name,
                     FullName = s.FullName, FatherName = s.FatherName, Mobile = s.Mobile,
-                    Address = s.Address, RFIDCode = s.RFIDCode, Photo = s.Photo,
+                    Email = s.Email, Address = s.Address, RFIDCode = s.RFIDCode, Photo = s.Photo,
                     DocumentImage = s.DocumentImage, DocumentType = s.DocumentType,
                     DOB = s.DOB, IsActive = s.IsActive, CreatedDate = s.CreatedDate
                 }).FirstOrDefaultAsync();
