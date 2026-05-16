@@ -17,5 +17,19 @@ namespace Multi_Library_Management_Api.Controllers
             var result = await _repo.LoginAsync(request);
             return Ok(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+        {
+            var result = await _repo.ForgotPasswordAsync(request.Email);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
+        {
+            var result = await _repo.ResetPasswordAsync(request);
+            return Ok(result);
+        }
     }
 }

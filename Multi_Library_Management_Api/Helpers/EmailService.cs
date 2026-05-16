@@ -10,11 +10,13 @@ namespace Multi_Library_Management_Api.Helpers
     {
         private readonly AppDbContext _context;
         private readonly ILogger<EmailService> _logger;
+        private readonly IConfiguration _configuration;
 
-        public EmailService(AppDbContext context, ILogger<EmailService> logger)
+        public EmailService(AppDbContext context, ILogger<EmailService> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task SendEmailAsync(string to, string subject, string body, int libraryId, byte[]? attachment = null, string? attachmentName = null)
@@ -66,6 +68,46 @@ namespace Multi_Library_Management_Api.Helpers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to send email to {to} for Library ID: {libraryId}. Error: {ex.Message}");
+            }
+        }
+        public async Task SendSystemEmailAsync(string to, string subject, string body)
+        {
+            try
+            {
+                var smtpHost = _configuration["EmailSettings:Host"];
+                var smtpPortStr = _configuration["EmailSettings:Port"];
+                var smtpUser = _configuration["EmailSettings:Email"];
+                var smtpPass = _configuration["EmailSettings:Password"];
+
+                if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
+                {
+                    _logger.LogWarning($"System SMTP settings not configured. Cannot send email to {to}.");
+                    return;
+                }
+
+                int smtpPort = int.TryParse(smtpPortStr, out var port) ? port : 587;
+
+                using (var client = new SmtpClient(smtpHost, smtpPort))
+                {
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(smtpUser, smtpPass);
+
+                    var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress(smtpUser),
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = true
+                    };
+                    mailMessage.To.Add(to);
+
+                    await client.SendMailAsync(mailMessage);
+                    _logger.LogInformation($"System email sent successfully to {to}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send system email to {to}. Error: {ex.Message}");
             }
         }
     }

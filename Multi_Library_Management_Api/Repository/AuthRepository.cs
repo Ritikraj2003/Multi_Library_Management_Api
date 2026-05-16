@@ -11,11 +11,13 @@ namespace Multi_Library_Management_Api.Repository
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public AuthRepository(AppDbContext context, IConfiguration configuration)
+        public AuthRepository(AppDbContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         public async Task<Response<LoginResponseDto>> LoginAsync(LoginRequestDto request)
@@ -72,6 +74,87 @@ namespace Multi_Library_Management_Api.Repository
                 response.Data = loginResponse;
                 response.Success = true;
                 response.Message = "Login successful.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+        public async Task<Response<string>> ForgotPasswordAsync(string email)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                {
+                    response.Success = false;
+                    response.Message = "Email address not found.";
+                    return response;
+                }
+
+                var key = _configuration["Jwt:Key"] ?? "YourSuperSecretKeyWithAtLeast32CharsLength!!";
+                var issuer = _configuration["Jwt:Issuer"] ?? "MultiLibrarySystem";
+                var audience = _configuration["Jwt:Audience"] ?? "MultiLibraryUser";
+
+                // Generate JWT reset token (5 minute expiry)
+                var token = JwtHelper.GenerateResetToken(user.Email, key, issuer, audience);
+                
+                var timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+                var resetLink = $"http://localhost:4200/auth/reset-password?token={token}&t={timestamp}";
+                
+                var body = $"<h3>Password Reset Request</h3><p>Please click the link below to reset your password. This link will expire in 5 minutes.</p><p><a href='{resetLink}'>Reset Password</a></p>";
+                
+                await _emailService.SendSystemEmailAsync(user.Email, "Password Reset Request", body);
+
+                response.Data = token; // Sending token to frontend as requested
+                response.Success = true;
+                response.Message = "Password reset link sent to your email.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<Response<string>> ResetPasswordAsync(ResetPasswordRequestDto request)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var key = _configuration["Jwt:Key"] ?? "YourSuperSecretKeyWithAtLeast32CharsLength!!";
+                var issuer = _configuration["Jwt:Issuer"] ?? "MultiLibrarySystem";
+                var audience = _configuration["Jwt:Audience"] ?? "MultiLibraryUser";
+
+                // Validate JWT token
+                var principal = JwtHelper.ValidateToken(request.Token, key, issuer, audience);
+                if (principal == null || principal.FindFirst("Purpose")?.Value != "ResetPassword")
+                {
+                    response.Success = false;
+                    response.Message = "Invalid or expired reset link.";
+                    return response;
+                }
+
+                var email = principal.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                
+                if (user == null)
+                {
+                    response.Success = false;
+                    response.Message = "User not found.";
+                    return response;
+                }
+
+                user.Password = request.NewPassword; 
+                user.IsActive = true; // Activate account on password reset
+                await _context.SaveChangesAsync();
+
+                response.Success = true;
+                response.Message = "Password has been reset successfully.";
             }
             catch (Exception ex)
             {

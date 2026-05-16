@@ -192,7 +192,10 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int BatchId { get; set; }
         public string BatchName { get; set; } = string.Empty;
         public string BatchTime { get; set; } = string.Empty;
+        public string StartTime { get; set; } = string.Empty;
+        public string EndTime { get; set; } = string.Empty;
         public bool IsOccupied { get; set; }
+        public bool IsDirectlyOccupied { get; set; }
     }
 
     public class SeatBatchStatusDto

@@ -37,5 +37,60 @@ namespace Multi_Library_Management_Api.Helpers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public static string GenerateResetToken(string email, string key, string issuer, string audience)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, email),
+                new Claim("Purpose", "ResetPassword")
+            };
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(5),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public static ClaimsPrincipal? ValidateToken(string token, string key, string issuer, string audience)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey,
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                return (ClaimsPrincipal)tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey,
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ClockSkew = TimeSpan.Zero
+                }, out _);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

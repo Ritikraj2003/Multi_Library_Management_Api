@@ -36,10 +36,18 @@ namespace Multi_Library_Management_Api.Repository
                     var seat = await _context.TableSeats.FindAsync(dto.TableSeatId);
                     if (seat == null) { response.Success = false; response.Message = "Seat not found."; return response; }
 
-                    var isBatchOccupied = await _context.StudentRegistrations
-                        .AnyAsync(r => r.TableSeatId == dto.TableSeatId && r.BatchId == dto.BatchId && r.Status == RegistrationStatus.Active);
+                    var requestedBatch = await _context.Batches.FindAsync(dto.BatchId);
+                    if (requestedBatch == null) { response.Success = false; response.Message = "Batch not found."; return response; }
+
+                    var activeRegistrations = await _context.StudentRegistrations
+                        .Include(r => r.Batch)
+                        .Where(r => r.TableSeatId == dto.TableSeatId && r.Status == RegistrationStatus.Active)
+                        .ToListAsync();
                     
-                    if (isBatchOccupied) { response.Success = false; response.Message = "Seat is already occupied in this batch."; return response; }
+                    bool isTimeOccupied = activeRegistrations.Any(r => 
+                        TimeOverlapHelper.IsOverlapping(requestedBatch.StartTime, requestedBatch.EndTime, r.Batch.StartTime, r.Batch.EndTime));
+
+                    if (isTimeOccupied) { response.Success = false; response.Message = "Seat is already occupied during this time range."; return response; }
 
                     // 3. Check active registration exists
                     var hasActive = await _context.StudentRegistrations.AnyAsync(r => r.StudentId == dto.StudentId && r.Status == RegistrationStatus.Active);
@@ -344,6 +352,7 @@ namespace Multi_Library_Management_Api.Repository
                     .ToListAsync();
 
                 var query = _context.StudentRegistrations
+                    .Include(r => r.Batch)
                     .Where(r => r.TableSeatId == seatId && r.Status == RegistrationStatus.Active);
                 
                 if (registrationId.HasValue && registrationId.Value > 0)
@@ -351,17 +360,26 @@ namespace Multi_Library_Management_Api.Repository
                     query = query.Where(r => r.Id != registrationId.Value);
                 }
 
-                var activeRegistrations = await query.Select(r => r.BatchId).ToListAsync();
+                var activeRegs = await query.ToListAsync();
 
                 var result = new SeatBatchStatusDto
                 {
                     TableSeatId = seatId,
-                    Batches = batches.Select(b => new BatchStatusDto
-                    {
-                        BatchId = b.Id,
-                        BatchName = b.Name,
-                        BatchTime = b.StartTime + " - " + b.EndTime,
-                        IsOccupied = activeRegistrations.Contains(b.Id)
+                    Batches = batches.Select(b => {
+                        bool isDirectlyOccupied = activeRegs.Any(r => r.BatchId == b.Id);
+                        bool isOverlappinglyOccupied = activeRegs.Any(r => 
+                            TimeOverlapHelper.IsOverlapping(b.StartTime, b.EndTime, r.Batch.StartTime, r.Batch.EndTime));
+
+                        return new BatchStatusDto
+                        {
+                            BatchId = b.Id,
+                            BatchName = b.Name,
+                            BatchTime = b.StartTime + " - " + b.EndTime,
+                            StartTime = b.StartTime,
+                            EndTime = b.EndTime,
+                            IsOccupied = isDirectlyOccupied || isOverlappinglyOccupied,
+                            IsDirectlyOccupied = isDirectlyOccupied
+                        };
                     }).ToList()
                 };
 
@@ -369,6 +387,38 @@ namespace Multi_Library_Management_Api.Repository
             }
             catch (Exception ex) { response.Success = false; response.Message = ex.Message; }
             return response;
+        }
+
+        private static class TimeOverlapHelper
+        {
+            public static bool IsOverlapping(string start1, string end1, string start2, string end2)
+            {
+                if (string.IsNullOrEmpty(start1) || string.IsNullOrEmpty(end1)) return false;
+                if (string.IsNullOrEmpty(start2) || string.IsNullOrEmpty(end2)) return false;
+
+                int s1 = TimeToMinutes(start1);
+                int e1 = TimeToMinutes(end1);
+                int s2 = TimeToMinutes(start2);
+                int e2 = TimeToMinutes(end2);
+
+                if (s1 == 0 && e1 == 0) return false;
+                if (s2 == 0 && e2 == 0) return false;
+
+                if (e1 <= s1) e1 += 1440;
+                if (e2 <= s2) e2 += 1440;
+
+                return s1 < e2 && s2 < e1;
+            }
+
+            private static int TimeToMinutes(string time)
+            {
+                if (string.IsNullOrEmpty(time)) return 0;
+                var parts = time.Split(':');
+                if (parts.Length < 2) return 0;
+                if (int.TryParse(parts[0], out int h) && int.TryParse(parts[1], out int m))
+                    return h * 60 + m;
+                return 0;
+            }
         }
 
         public async Task<Response<PagedResult<StudentRegistrationListDto>>> GetDueStudentsAsync(SearchQuery query)
