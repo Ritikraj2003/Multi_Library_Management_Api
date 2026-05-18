@@ -13,6 +13,7 @@ namespace Multi_Library_Management_Api.Controllers
         public UserController(IUserRepository repo) => _repo = repo;
 
         [HttpPost]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> Create([FromForm] CreateUserDto dto)
         {
             var result = await _repo.CreateAsync(dto);
@@ -20,6 +21,7 @@ namespace Multi_Library_Management_Api.Controllers
         }
 
         [HttpPut]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> Update([FromForm] UpdateUserDto dto)
         {
             var result = await _repo.UpdateAsync(dto);

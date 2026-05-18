@@ -20,6 +20,7 @@ namespace Multi_Library_Management_Api.Models
         public decimal MonthlyAmount { get; set; }
         public decimal SecurityAmount { get; set; }
         public string? Notes { get; set; }
+        public string? RFIDCode { get; set; }
         public RegistrationStatus Status { get; set; }
         public int CreatedBy { get; set; }
 

@@ -10,6 +10,19 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ─── Configure Global Request and Form Limits (100 MB) ──────────────────────────
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 104857600; // 100 MB
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
 // ─── Database (MySQL/Hostinger) ────────────────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

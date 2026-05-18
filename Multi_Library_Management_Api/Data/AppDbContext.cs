@@ -149,7 +149,6 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(s => s.FullName).IsRequired().HasMaxLength(150);
                 entity.Property(s => s.Mobile).IsRequired().HasMaxLength(20);
                 entity.Property(s => s.Email).HasMaxLength(200);
-                entity.Property(s => s.RFIDCode).HasMaxLength(100);
                 entity.Property(s => s.IsActive).HasDefaultValue(true);
                 entity.Property(s => s.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
 
@@ -165,6 +164,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.HasKey(sr => sr.Id);
                 entity.Property(sr => sr.MonthlyAmount).HasColumnType("decimal(10,2)");
                 entity.Property(sr => sr.SecurityAmount).HasColumnType("decimal(10,2)");
+                entity.Property(sr => sr.RFIDCode).HasMaxLength(100);
                 entity.Property(sr => sr.RegistrationDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
                 entity.Property(sr => sr.Status).HasConversion<int>();
 

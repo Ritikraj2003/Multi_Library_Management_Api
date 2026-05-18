@@ -63,7 +63,9 @@ namespace Multi_Library_Management_Api.Repository
                         RegistrationDate = DateTime.UtcNow,
                         StartDate = dto.StartDate, DueDate = dto.DueDate,
                         MonthlyAmount = dto.MonthlyAmount, SecurityAmount = dto.SecurityAmount,
-                        Notes = dto.Notes, Status = RegistrationStatus.Active,
+                        Notes = dto.Notes,
+                        RFIDCode = dto.RFIDCode,
+                        Status = RegistrationStatus.Active,
                         CreatedBy = dto.CreatedBy
                     };
                     _context.StudentRegistrations.Add(registration);
@@ -185,6 +187,7 @@ namespace Multi_Library_Management_Api.Repository
                 registration.DueDate = dto.DueDate;
                 registration.MonthlyAmount = dto.MonthlyAmount;
                 registration.Notes = dto.Notes;
+                registration.RFIDCode = dto.RFIDCode;
 
                 if (dto.Status != 0 && dto.Status != registration.Status)
                 {
@@ -264,6 +267,7 @@ namespace Multi_Library_Management_Api.Repository
                         BatchId = r.BatchId, BatchName = r.Batch.Name,
                         StartDate = r.StartDate, DueDate = r.DueDate, 
                         MonthlyAmount = r.MonthlyAmount,
+                        RFIDCode = r.RFIDCode,
                         Status = r.Status.ToString()
                     }).ToListAsync();
 
@@ -464,6 +468,7 @@ namespace Multi_Library_Management_Api.Repository
                     TableSeatId = r.TableSeatId, SeatNumber = r.TableSeat.SeatNumber, 
                     BatchId = r.BatchId, BatchName = r.Batch.Name,
                     StartDate = r.StartDate, DueDate = r.DueDate, MonthlyAmount = r.MonthlyAmount,
+                    RFIDCode = r.RFIDCode,
                     Status = r.Status.ToString()
                 }).ToListAsync();
 
@@ -483,7 +488,7 @@ namespace Multi_Library_Management_Api.Repository
                     BatchId = r.BatchId, BatchName = r.Batch.Name, BatchTime = r.Batch.StartTime + " - " + r.Batch.EndTime,
                     RegistrationDate = r.RegistrationDate, StartDate = r.StartDate, DueDate = r.DueDate,
                     MonthlyAmount = r.MonthlyAmount, SecurityAmount = r.SecurityAmount,
-                    Notes = r.Notes, Status = r.Status.ToString(),
+                    Notes = r.Notes, RFIDCode = r.RFIDCode, Status = r.Status.ToString(),
                     CreatedBy = r.CreatedBy, CreatedByName = r.CreatedByUser.FullName
                 }).FirstOrDefaultAsync();
     }

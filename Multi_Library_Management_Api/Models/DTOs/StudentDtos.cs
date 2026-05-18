@@ -12,7 +12,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string Mobile { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Address { get; set; }
-        public string? RFIDCode { get; set; }
         public IFormFile? StudentImage { get; set; }
         public IFormFile? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
@@ -28,7 +27,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string Mobile { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Address { get; set; }
-        public string? RFIDCode { get; set; }
         public IFormFile? StudentImage { get; set; }
         public IFormFile? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
@@ -46,7 +44,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string Mobile { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Address { get; set; }
-        public string? RFIDCode { get; set; }
         public string? Photo { get; set; }
         public string? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
@@ -64,7 +61,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string? Email { get; set; }
         public string? Address { get; set; }
         public string LibraryName { get; set; } = string.Empty;
-        public string? RFIDCode { get; set; }
         public string? Photo { get; set; }
         public string? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
@@ -85,6 +81,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public decimal MonthlyAmount { get; set; }
         public decimal SecurityAmount { get; set; }
         public string? Notes { get; set; }
+        public string? RFIDCode { get; set; }
         public int CreatedBy { get; set; }
     }
 
@@ -94,6 +91,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public DateTime DueDate { get; set; }
         public decimal MonthlyAmount { get; set; }
         public string? Notes { get; set; }
+        public string? RFIDCode { get; set; }
         public RegistrationStatus Status { get; set; }
     }
 
@@ -115,6 +113,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public decimal MonthlyAmount { get; set; }
         public decimal SecurityAmount { get; set; }
         public string? Notes { get; set; }
+        public string? RFIDCode { get; set; }
         public string Status { get; set; } = string.Empty;
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
@@ -133,6 +132,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public DateTime StartDate { get; set; }
         public DateTime DueDate { get; set; }
         public decimal MonthlyAmount { get; set; }
+        public string? RFIDCode { get; set; }
         public string Status { get; set; } = string.Empty;
     }
 

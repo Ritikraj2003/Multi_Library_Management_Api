@@ -54,7 +54,6 @@ namespace Multi_Library_Management_Api.Repository
                     Mobile = dto.Mobile,
                     Email = dto.Email,
                     Address = dto.Address,
-                    RFIDCode = dto.RFIDCode,
                     Photo = photoPath,
                     DocumentImage = docImagePath,
                     DocumentType = dto.DocumentType,
@@ -115,7 +114,6 @@ namespace Multi_Library_Management_Api.Repository
                 student.Mobile = dto.Mobile;
                 student.Email = dto.Email;
                 student.Address = dto.Address;
-                student.RFIDCode = dto.RFIDCode;
                 student.DocumentType = dto.DocumentType;
                 student.DOB = dto.DOB;
                 student.IsActive = dto.IsActive;
@@ -174,7 +172,7 @@ namespace Multi_Library_Management_Api.Repository
                     {
                         Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, 
                         Mobile = s.Mobile, Email = s.Email, Address = s.Address,
-                        LibraryName = s.Library.Name, RFIDCode = s.RFIDCode, Photo = s.Photo, 
+                        LibraryName = s.Library.Name, Photo = s.Photo, 
                         DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, 
                         DOB = s.DOB, IsActive = s.IsActive
                     }).ToListAsync();
@@ -192,7 +190,7 @@ namespace Multi_Library_Management_Api.Repository
                 {
                     Id = s.Id, LibraryId = s.LibraryId, LibraryName = s.Library.Name,
                     FullName = s.FullName, FatherName = s.FatherName, Mobile = s.Mobile,
-                    Email = s.Email, Address = s.Address, RFIDCode = s.RFIDCode, Photo = s.Photo,
+                    Email = s.Email, Address = s.Address, Photo = s.Photo,
                     DocumentImage = s.DocumentImage, DocumentType = s.DocumentType,
                     DOB = s.DOB, IsActive = s.IsActive, CreatedDate = s.CreatedDate
                 }).FirstOrDefaultAsync();
