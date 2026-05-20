@@ -96,5 +96,12 @@ namespace Multi_Library_Management_Api.Controllers
             var result = await _repo.GetSeatAvailabilityAsync(seatId, libraryId, registrationId);
             return Ok(result);
         }
+
+        [HttpPost("send-receipt-email")]
+        public async Task<IActionResult> SendReceiptEmail([FromBody] SendReceiptEmailDto dto)
+        {
+            var result = await _repo.SendReceiptEmailAsync(dto);
+            return Ok(result);
+        }
     }
 }

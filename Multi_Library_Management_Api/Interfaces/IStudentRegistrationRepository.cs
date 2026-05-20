@@ -18,5 +18,6 @@ namespace Multi_Library_Management_Api.Interfaces
         Task<Response<PagedResult<StudentRegistrationListDto>>> GetTodayDueStudentsAsync(SearchQuery query);
         Task<Response<PagedResult<StudentRegistrationListDto>>> GetExpiredStudentsAsync(SearchQuery query);
         Task<Response<PagedResult<StudentRegistrationListDto>>> GetCancelledStudentsAsync(SearchQuery query);
+        Task<Response<bool>> SendReceiptEmailAsync(SendReceiptEmailDto dto);
     }
 }

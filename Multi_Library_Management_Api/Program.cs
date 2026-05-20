@@ -55,6 +55,7 @@ builder.Services.AddScoped<IGeneralSettingRepository, GeneralSettingRepository>(
 builder.Services.AddScoped<IRfidAccessRepository, RfidAccessRepository>();
 
 // ─── Controllers ───────────────────────────────────────────────────────────────
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 
 // ─── Swagger ───────────────────────────────────────────────────────────────────

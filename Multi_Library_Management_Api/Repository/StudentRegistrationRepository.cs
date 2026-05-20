@@ -4,6 +4,9 @@ using Multi_Library_Management_Api.Interfaces;
 using Multi_Library_Management_Api.Models;
 using Multi_Library_Management_Api.Models.DTOs;
 using Multi_Library_Management_Api.Query;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace Multi_Library_Management_Api.Repository
 {
@@ -491,5 +494,220 @@ namespace Multi_Library_Management_Api.Repository
                     Notes = r.Notes, RFIDCode = r.RFIDCode, Status = r.Status.ToString(),
                     CreatedBy = r.CreatedBy, CreatedByName = r.CreatedByUser.FullName
                 }).FirstOrDefaultAsync();
+
+        public async Task<Response<bool>> SendReceiptEmailAsync(SendReceiptEmailDto dto)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                // 1. Fetch registration details
+                var registration = await _context.StudentRegistrations
+                    .Include(r => r.Student)
+                    .Include(r => r.TableSeat)
+                    .Include(r => r.Batch)
+                    .Where(r => r.Id == dto.RegistrationId)
+                    .FirstOrDefaultAsync();
+
+                if (registration == null)
+                {
+                    response.Success = false;
+                    response.Message = "Registration not found.";
+                    return response;
+                }
+
+                // Query correct payment mode from payments history
+                var paymentMode = await _context.Payments
+                    .Where(p => p.RegistrationId == registration.Id)
+                    .OrderByDescending(p => p.PaymentDate)
+                    .Select(p => p.PaymentMode)
+                    .FirstOrDefaultAsync() ?? "Cash";
+
+                // 2. Fetch configured library name
+                var libraryNameSetting = await _context.GeneralSettings
+                    .Where(s => s.LibraryId == registration.LibraryId && s.Key == "library_name")
+                    .Select(s => s.Value)
+                    .FirstOrDefaultAsync();
+                var libraryName = libraryNameSetting ?? "MBR Library";
+
+                // 3. Set up email fields
+                var recipientEmail = !string.IsNullOrEmpty(dto.CustomEmail) ? dto.CustomEmail : registration.Student.Email;
+                if (string.IsNullOrEmpty(recipientEmail))
+                {
+                    response.Success = false;
+                    response.Message = "Recipient email address not found.";
+                    return response;
+                }
+
+                var receiptNo = $"SLM-REG-{registration.Id}";
+                var subject = $"Payment Confirmation Receipt - #{receiptNo} - {libraryName}";
+                var totalAmount = registration.MonthlyAmount + registration.SecurityAmount;
+                
+                var body = $@"
+                    <div style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; color: #333;'>
+                        <h2 style='color: #0078d4;'>Payment Confirmation Receipt</h2>
+                        <p>Dear <b>{registration.Student.FullName}</b>,</p>
+                        <p>Thank you for your seat registration payment at <b>{libraryName}</b>. We have successfully processed your transaction.</p>
+                        <p>Please find your receipt summary below and the full PDF receipt attached to this email.</p>
+                        
+                        <div style='background: #f4f6f9; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin: 20px 0;'>
+                            <p style='margin: 5px 0;'><b>Receipt Number:</b> #{receiptNo}</p>
+                            <p style='margin: 5px 0;'><b>Allocated Seat:</b> Seat {registration.TableSeat.SeatNumber}</p>
+                            <p style='margin: 5px 0;'><b>Shift/Batch:</b> {registration.Batch.Name}</p>
+                            <p style='margin: 5px 0;'><b>Amount Paid:</b> ₹{totalAmount:F2}</p>
+                            <p style='margin: 5px 0;'><b>Next Due Date:</b> {registration.DueDate:dd MMM yyyy}</p>
+                        </div>
+
+                        <p>Best regards,<br>Management Team<br><b>{libraryName}</b></p>
+                    </div>";
+
+                // 4. Generate beautiful A5 PDF receipt using QuestPDF
+                QuestPDF.Settings.License = LicenseType.Community;
+
+                var pdfDocument = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A5);
+                        page.Margin(1.5f, Unit.Centimetre);
+                        page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x.FontSize(9).FontFamily("Arial"));
+
+                        page.Header()
+                            .Column(column =>
+                            {
+                                column.Spacing(5);
+                                column.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Column(col =>
+                                    {
+                                        col.Item().Text(libraryName).FontSize(16).Bold().FontColor(Colors.Blue.Darken2);
+                                        col.Item().Text("Receipt & Student Invoice").FontSize(9).Italic().FontColor(Colors.Grey.Medium);
+                                    });
+                                    row.ConstantItem(120).AlignRight().Column(col =>
+                                    {
+                                        col.Item().Text($"#{receiptNo}").Bold().FontSize(10);
+                                        col.Item().Text(DateTime.Now.ToString("dd MMM yyyy")).FontSize(8).FontColor(Colors.Grey.Medium);
+                                    });
+                                });
+                                
+                                column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten1);
+                            });
+
+                        page.Content()
+                            .PaddingVertical(10)
+                            .Column(column =>
+                            {
+                                column.Spacing(10);
+
+                                // Student Profile Details
+                                column.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Column(col =>
+                                    {
+                                        col.Item().Text("STUDENT PROFILE").FontSize(8).Bold().FontColor(Colors.Grey.Darken1);
+                                        col.Item().Text($"Name: {registration.Student.FullName}").Bold();
+                                        col.Item().Text($"Contact: {registration.Student.Mobile}");
+                                    });
+                                });
+
+                                column.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+
+                                // Seat & Shift Details
+                                column.Item().Column(col =>
+                                {
+                                    col.Spacing(3);
+                                    col.Item().Text("ALLOCATED SPACE & SHIFT").FontSize(8).Bold().FontColor(Colors.Grey.Darken1);
+                                    col.Item().Text($"Room / Table: Table {registration.TableSeat.TableNumber}");
+                                    col.Item().Text($"Assigned Seat: Seat {registration.TableSeat.SeatNumber}");
+                                    col.Item().Text($"Shift/Batch: {registration.Batch.Name} ({registration.Batch.StartTime} - {registration.Batch.EndTime})");
+                                    col.Item().Text($"Validity Period: {registration.StartDate:dd MMM yyyy} - {registration.DueDate:dd MMM yyyy}");
+                                });
+
+                                column.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+
+                                // Fee Breakdown Column
+                                column.Item().Column(col =>
+                                {
+                                    col.Spacing(5);
+                                    col.Item().Text("FEE INVOICE BREAKDOWN").FontSize(8).Bold().FontColor(Colors.Grey.Darken1);
+                                    
+                                    col.Item().Column(breakdown =>
+                                    {
+                                        breakdown.Spacing(5);
+                                        
+                                        // Header Row
+                                        breakdown.Item().Row(r =>
+                                        {
+                                            r.RelativeItem(3).Text("Item Description").Bold();
+                                            r.RelativeItem(1).AlignRight().Text("Amount").Bold();
+                                        });
+                                        
+                                        breakdown.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+
+                                        // Monthly Fee Row
+                                        breakdown.Item().Row(r =>
+                                        {
+                                            r.RelativeItem(3).Text("Library Monthly Fee (Seat Reservation)");
+                                            r.RelativeItem(1).AlignRight().Text($"INR {registration.MonthlyAmount:F2}");
+                                        });
+
+                                        // Security Deposit Row if positive
+                                        if (registration.SecurityAmount > 0)
+                                        {
+                                            breakdown.Item().Row(r =>
+                                            {
+                                                r.RelativeItem(3).Text("Refundable Security Deposit");
+                                                r.RelativeItem(1).AlignRight().Text($"INR {registration.SecurityAmount:F2}");
+                                            });
+                                        }
+                                    });
+                                });
+
+                                column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten1);
+
+                                // Totals
+                                column.Item().Row(row =>
+                                {
+                                    row.RelativeItem().Text($"Payment Mode: {paymentMode}").FontSize(8).Italic();
+                                    row.ConstantItem(150).AlignRight().Text($"Grand Total: INR {totalAmount:F2}").Bold().FontSize(11).FontColor(Colors.Blue.Darken2);
+                                });
+                            });
+
+                        page.Footer()
+                            .Column(col =>
+                            {
+                                col.Spacing(3);
+                                col.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+                                col.Item().AlignCenter().Text($"Thank you for choosing {libraryName}!").FontSize(8).Italic().FontColor(Colors.Grey.Medium);
+                                col.Item().AlignCenter().Text("Terms & Conditions Apply. This is a computer generated invoice.").FontSize(7).FontColor(Colors.Grey.Medium);
+                            });
+                    });
+                });
+
+                using var stream = new MemoryStream();
+                pdfDocument.GeneratePdf(stream);
+                byte[] pdfBytes = stream.ToArray();
+
+                // 5. Send email with the generated PDF attachment
+                await _emailService.SendEmailAsync(
+                    recipientEmail,
+                    subject,
+                    body,
+                    registration.LibraryId,
+                    pdfBytes,
+                    $"Receipt_{receiptNo}.pdf"
+                );
+
+                response.Data = true;
+                response.Success = true;
+                response.Message = "Email sent successfully with PDF receipt.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
     }
 }
