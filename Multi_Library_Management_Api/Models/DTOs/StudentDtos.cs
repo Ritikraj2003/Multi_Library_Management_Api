@@ -101,6 +101,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int LibraryId { get; set; }
         public int StudentId { get; set; }
         public string StudentName { get; set; } = string.Empty;
+        public string Mobile { get; set; } = string.Empty;
         public int TableSeatId { get; set; }
         public string SeatNumber { get; set; } = string.Empty;
         public string TableNumber { get; set; } = string.Empty;
@@ -117,6 +118,8 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string Status { get; set; } = string.Empty;
         public int CreatedBy { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
+        public int RegistrationId { get; set; }
+        public string PaymentMode { get; set; } = string.Empty;
     }
 
     public class StudentRegistrationListDto

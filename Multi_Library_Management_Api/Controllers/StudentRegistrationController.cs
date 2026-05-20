@@ -103,5 +103,13 @@ namespace Multi_Library_Management_Api.Controllers
             var result = await _repo.SendReceiptEmailAsync(dto);
             return Ok(result);
         }
+
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+        [HttpGet("public-receipt/{registrationId}/{libraryId}/{paymentId}")]
+        public async Task<IActionResult> GetPublicReceipt(int registrationId, int libraryId, int paymentId)
+        {
+            var result = await _repo.GetPublicReceiptAsync(registrationId, libraryId, paymentId);
+            return Ok(result);
+        }
     }
 }

@@ -4,5 +4,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
     {
         public int RegistrationId { get; set; }
         public string? CustomEmail { get; set; }
+        public int? PaymentId { get; set; }
     }
 }
