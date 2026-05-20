@@ -52,6 +52,7 @@ builder.Services.AddScoped<IStudentRegistrationRepository, StudentRegistrationRe
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IGeneralSettingRepository, GeneralSettingRepository>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IRfidAccessRepository, RfidAccessRepository>();
 
 // ─── Controllers ───────────────────────────────────────────────────────────────
