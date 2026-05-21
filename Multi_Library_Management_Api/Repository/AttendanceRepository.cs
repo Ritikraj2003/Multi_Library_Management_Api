@@ -170,5 +170,38 @@ namespace Multi_Library_Management_Api.Repository
 
             return new Response<List<AttendanceLogDto>> { Success = true, Data = logs };
         }
+
+        public async Task<Response<List<AttendanceBatchStatDto>>> GetAttendanceByBatchAsync(int libraryId, string? date)
+        {
+            DateTime targetDate;
+            if (!string.IsNullOrEmpty(date) && DateTime.TryParse(date, out var parsed))
+                targetDate = parsed.Date;
+            else
+                targetDate = GetIndianTime().Date;
+
+            var nextDay = targetDate.AddDays(1);
+
+            var stats = await _context.AttendanceLogs
+                .Where(al => al.LibraryId == libraryId
+                          && al.EntryTime >= targetDate
+                          && al.EntryTime < nextDay)
+                .Join(
+                    _context.StudentRegistrations
+                        .Where(r => r.LibraryId == libraryId && r.Status == RegistrationStatus.Active)
+                        .Include(r => r.Batch),
+                    al => al.StudentId,
+                    sr => sr.StudentId,
+                    (al, sr) => new { sr.Batch.Name }
+                )
+                .GroupBy(x => x.Name)
+                .Select(g => new AttendanceBatchStatDto
+                {
+                    BatchName = g.Key,
+                    AttendanceCount = g.Count()
+                })
+                .ToListAsync();
+
+            return new Response<List<AttendanceBatchStatDto>> { Success = true, Data = stats };
+        }
     }
 }

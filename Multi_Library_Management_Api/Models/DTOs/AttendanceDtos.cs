@@ -33,4 +33,10 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public DateTime? ExitTime { get; set; }
         public bool AccessGranted { get; set; }
     }
+
+    public class AttendanceBatchStatDto
+    {
+        public string BatchName { get; set; } = string.Empty;
+        public int AttendanceCount { get; set; }
+    }
 }

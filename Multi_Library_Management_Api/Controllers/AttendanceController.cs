@@ -43,5 +43,15 @@ namespace Multi_Library_Management_Api.Controllers
             }
             return Ok(response);
         }
+
+        [HttpGet("BatchStats/{libraryId}")]
+        [Authorize]
+        public async Task<IActionResult> GetAttendanceByBatch(int libraryId, [FromQuery] string? date)
+        {
+            var response = await _attendanceRepository.GetAttendanceByBatchAsync(libraryId, date);
+            if (!response.Success)
+                return BadRequest(response);
+            return Ok(response);
+        }
     }
 }

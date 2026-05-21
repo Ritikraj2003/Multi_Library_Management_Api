@@ -7,5 +7,6 @@ namespace Multi_Library_Management_Api.Interfaces
     {
         Task<Response<AttendanceLogDto>> MarkAttendanceAsync(MarkAttendanceDto dto);
         Task<Response<List<AttendanceLogDto>>> GetTodayAttendanceAsync(int libraryId);
+        Task<Response<List<AttendanceBatchStatDto>>> GetAttendanceByBatchAsync(int libraryId, string? date);
     }
 }
