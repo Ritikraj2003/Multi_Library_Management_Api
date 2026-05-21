@@ -22,6 +22,8 @@ namespace Multi_Library_Management_Api.Data
         public DbSet<AttendanceLog> AttendanceLogs { get; set; }
         public DbSet<GateAccessLog> GateAccessLogs { get; set; }
         public DbSet<GeneralSetting> GeneralSettings { get; set; }
+        public DbSet<AttendanceLocation> AttendanceLocations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -270,6 +272,22 @@ namespace Multi_Library_Management_Api.Data
                       .HasForeignKey(gs => gs.LibraryId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // ─── AttendanceLocations ──────────────────────────────────────────
+            modelBuilder.Entity<AttendanceLocation>(entity =>
+            {
+                entity.HasKey(al => al.Id);
+                entity.Property(al => al.Latitude).IsRequired();
+                entity.Property(al => al.Longitude).IsRequired();
+                entity.Property(al => al.RadiusInMeters).IsRequired();
+                entity.Property(al => al.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                entity.HasOne(al => al.Library)
+                      .WithMany()
+                      .HasForeignKey(al => al.LibraryId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
 
             // ─── Seed Data ────────────────────────────────────────────────────
             SeedData(modelBuilder);
