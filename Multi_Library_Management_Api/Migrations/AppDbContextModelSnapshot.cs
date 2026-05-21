@@ -19,6 +19,39 @@ namespace Multi_Library_Management_Api.Migrations
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double");
+
+                    b.Property<double>("RadiusInMeters")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("AttendanceLocations");
+                });
+
             modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLog", b =>
                 {
                     b.Property<int>("Id")
@@ -33,6 +66,9 @@ namespace Multi_Library_Management_Api.Migrations
 
                     b.Property<DateTime?>("ExitTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -144,6 +180,39 @@ namespace Multi_Library_Management_Api.Migrations
                     b.ToTable("GateAccessLogs");
                 });
 
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.GeneralSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("GeneralSettings");
+                });
+
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Library", b =>
                 {
                     b.Property<int>("Id")
@@ -162,6 +231,14 @@ namespace Multi_Library_Management_Api.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("(UTC_TIMESTAMP())");
 
+                    b.Property<string>("DocumentImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DocumentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
@@ -170,6 +247,10 @@ namespace Multi_Library_Management_Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
+
+                    b.Property<string>("LibraryIcon")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Mobile")
                         .HasMaxLength(20)
@@ -191,6 +272,27 @@ namespace Multi_Library_Management_Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Libraries");
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.LibraryPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("LibraryPermissions");
                 });
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Payment", b =>
@@ -771,6 +873,10 @@ namespace Multi_Library_Management_Api.Migrations
                     b.Property<string>("DocumentType")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
                     b.Property<string>("FatherName")
                         .HasColumnType("longtext");
 
@@ -794,10 +900,6 @@ namespace Multi_Library_Management_Api.Migrations
 
                     b.Property<string>("Photo")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("RFIDCode")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -829,6 +931,10 @@ namespace Multi_Library_Management_Api.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("RFIDCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .ValueGeneratedOnAdd()
@@ -950,6 +1056,10 @@ namespace Multi_Library_Management_Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("ProfileImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -977,6 +1087,17 @@ namespace Multi_Library_Management_Api.Migrations
                             Password = "Admin@123",
                             RoleId = 1
                         });
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLocation", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
                 });
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLog", b =>
@@ -1021,6 +1142,36 @@ namespace Multi_Library_Management_Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.GeneralSetting", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.LibraryPermission", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany("LibraryPermissions")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Multi_Library_Management_Api.Models.Permission", "Permission")
+                        .WithMany("LibraryPermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+
+                    b.Navigation("Permission");
                 });
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Payment", b =>
@@ -1179,6 +1330,8 @@ namespace Multi_Library_Management_Api.Migrations
                 {
                     b.Navigation("Floors");
 
+                    b.Navigation("LibraryPermissions");
+
                     b.Navigation("Roles");
 
                     b.Navigation("Students");
@@ -1188,6 +1341,8 @@ namespace Multi_Library_Management_Api.Migrations
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Permission", b =>
                 {
+                    b.Navigation("LibraryPermissions");
+
                     b.Navigation("RolePermissions");
                 });
 

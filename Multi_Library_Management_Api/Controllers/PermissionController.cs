@@ -60,5 +60,19 @@ namespace Multi_Library_Management_Api.Controllers
             var result = await _repo.GetPermissionsByRoleIdAsync(roleId);
             return Ok(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignToLibrary([FromBody] AssignLibraryPermissionsDto dto)
+        {
+            var result = await _repo.AssignPermissionsToLibraryAsync(dto);
+            return Ok(result);
+        }
+
+        [HttpGet("{libraryId}")]
+        public async Task<IActionResult> GetByLibrary(int libraryId)
+        {
+            var result = await _repo.GetPermissionsByLibraryIdAsync(libraryId);
+            return Ok(result);
+        }
     }
 }

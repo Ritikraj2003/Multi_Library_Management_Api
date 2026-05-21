@@ -13,5 +13,9 @@ namespace Multi_Library_Management_Api.Interfaces
         Task<Response<PagedResult<PermissionListDto>>> GetAllAsync(SearchQuery query);
         Task<Response<bool>> AssignPermissionsToRoleAsync(AssignPermissionsDto dto);
         Task<Response<List<RolePermissionResponseDto>>> GetPermissionsByRoleIdAsync(int roleId);
+
+        // Library Permissions
+        Task<Response<bool>> AssignPermissionsToLibraryAsync(AssignLibraryPermissionsDto dto);
+        Task<Response<List<LibraryPermissionResponseDto>>> GetPermissionsByLibraryIdAsync(int libraryId);
     }
 }

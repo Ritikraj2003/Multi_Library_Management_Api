@@ -45,9 +45,22 @@ namespace Multi_Library_Management_Api.Repository
                 }
 
                 // Get Permissions
-                var permissions = await _context.RolePermissions
+                var permissionsQuery = _context.RolePermissions
                     .Include(rp => rp.Permission)
                     .Where(rp => rp.RoleId == user.RoleId)
+                    .AsQueryable();
+
+                if (user.LibraryId.HasValue)
+                {
+                    var libraryPermissionIds = await _context.LibraryPermissions
+                        .Where(lp => lp.LibraryId == user.LibraryId.Value)
+                        .Select(lp => lp.PermissionId)
+                        .ToListAsync();
+                    
+                    permissionsQuery = permissionsQuery.Where(rp => libraryPermissionIds.Contains(rp.PermissionId));
+                }
+
+                var permissions = await permissionsQuery
                     .Select(rp => rp.Permission.Name)
                     .ToListAsync();
 

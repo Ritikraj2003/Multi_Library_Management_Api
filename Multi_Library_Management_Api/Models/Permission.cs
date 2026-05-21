@@ -11,5 +11,6 @@ namespace Multi_Library_Management_Api.Models
 
         // Navigation Properties
         public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+        public ICollection<LibraryPermission> LibraryPermissions { get; set; } = new List<LibraryPermission>();
     }
 }

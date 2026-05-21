@@ -21,5 +21,6 @@ namespace Multi_Library_Management_Api.Models
         public ICollection<Role> Roles { get; set; } = new List<Role>();
         public ICollection<Floor> Floors { get; set; } = new List<Floor>();
         public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<LibraryPermission> LibraryPermissions { get; set; } = new List<LibraryPermission>();
     }
 }

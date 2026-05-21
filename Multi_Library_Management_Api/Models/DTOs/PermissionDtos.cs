@@ -36,6 +36,24 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public bool IsActive { get; set; }
     }
 
+    // ─── LibraryPermission DTOs ───────────────────────────────────────────────
+
+    public class AssignLibraryPermissionsDto
+    {
+        public int LibraryId { get; set; }
+        public List<int> PermissionIds { get; set; } = new();
+    }
+
+    public class LibraryPermissionResponseDto
+    {
+        public int Id { get; set; }
+        public int LibraryId { get; set; }
+        public string LibraryName { get; set; } = string.Empty;
+        public int PermissionId { get; set; }
+        public string PermissionName { get; set; } = string.Empty;
+        public string Module { get; set; } = string.Empty;
+    }
+
     // ─── RolePermission DTOs ──────────────────────────────────────────────────
 
     public class AssignPermissionsDto

@@ -114,6 +114,25 @@ namespace Multi_Library_Management_Api.Repository
             var response = new Response<bool>();
             try
             {
+                var role = await _context.Roles.FindAsync(dto.RoleId);
+                if (role == null) { response.Success = false; response.Message = "Role not found."; return response; }
+
+                if (role.LibraryId.HasValue)
+                {
+                    var libraryPermissions = await _context.LibraryPermissions
+                        .Where(lp => lp.LibraryId == role.LibraryId.Value)
+                        .Select(lp => lp.PermissionId)
+                        .ToListAsync();
+
+                    var invalidPermissions = dto.PermissionIds.Except(libraryPermissions).ToList();
+                    if (invalidPermissions.Any())
+                    {
+                        response.Success = false;
+                        response.Message = "Cannot assign permissions that are not granted to the library.";
+                        return response;
+                    }
+                }
+
                 // Remove existing assignments for this role
                 var existing = _context.RolePermissions.Where(rp => rp.RoleId == dto.RoleId);
                 _context.RolePermissions.RemoveRange(existing);
@@ -149,6 +168,69 @@ namespace Multi_Library_Management_Api.Repository
                         RoleId = rp.RoleId,
                         RoleName = r.Name,
                         PermissionId = rp.PermissionId,
+                        PermissionName = p.Name,
+                        Module = p.Module
+                    }
+                ).ToListAsync();
+
+                response.Data = items; response.Success = true; response.Message = "Success";
+            }
+            catch (Exception ex) { response.Success = false; response.Message = ex.Message; }
+            return response;
+        }
+
+        public async Task<Response<bool>> AssignPermissionsToLibraryAsync(AssignLibraryPermissionsDto dto)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                // Remove existing assignments
+                var existing = _context.LibraryPermissions.Where(lp => lp.LibraryId == dto.LibraryId);
+                _context.LibraryPermissions.RemoveRange(existing);
+
+                // Add new assignments
+                var newAssignments = dto.PermissionIds.Select(pid => new LibraryPermission
+                {
+                    LibraryId = dto.LibraryId,
+                    PermissionId = pid
+                });
+                _context.LibraryPermissions.AddRange(newAssignments);
+
+                // Also we need to clean up roles of this library that might have lost some permissions
+                var validPermissionIds = dto.PermissionIds.ToHashSet();
+                var libraryRoles = await _context.Roles.Where(r => r.LibraryId == dto.LibraryId).Select(r => r.Id).ToListAsync();
+                
+                if (libraryRoles.Any())
+                {
+                    var invalidRolePermissions = _context.RolePermissions
+                        .Where(rp => libraryRoles.Contains(rp.RoleId) && !validPermissionIds.Contains(rp.PermissionId));
+                    _context.RolePermissions.RemoveRange(invalidRolePermissions);
+                }
+
+                await _context.SaveChangesAsync();
+
+                response.Data = true; response.Success = true; response.Message = "Permissions assigned to library.";
+            }
+            catch (Exception ex) { response.Success = false; response.Message = ex.Message; }
+            return response;
+        }
+
+        public async Task<Response<List<LibraryPermissionResponseDto>>> GetPermissionsByLibraryIdAsync(int libraryId)
+        {
+            var response = new Response<List<LibraryPermissionResponseDto>>();
+            try
+            {
+                var items = await (
+                    from lp in _context.LibraryPermissions
+                    join l in _context.Libraries on lp.LibraryId equals l.Id
+                    join p in _context.Permissions on lp.PermissionId equals p.Id
+                    where lp.LibraryId == libraryId
+                    select new LibraryPermissionResponseDto
+                    {
+                        Id = lp.Id,
+                        LibraryId = lp.LibraryId,
+                        LibraryName = l.Name,
+                        PermissionId = lp.PermissionId,
                         PermissionName = p.Name,
                         Module = p.Module
                     }

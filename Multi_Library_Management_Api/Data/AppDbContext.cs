@@ -11,6 +11,7 @@ namespace Multi_Library_Management_Api.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<LibraryPermission> LibraryPermissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Library> Libraries { get; set; }
         public DbSet<Floor> Floors { get; set; }
@@ -68,6 +69,22 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(p => p.Module).IsRequired().HasMaxLength(100);
                 entity.Property(p => p.IsActive).HasDefaultValue(true);
                 entity.Property(p => p.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+            });
+
+            // ─── LibraryPermissions ───────────────────────────────────────────
+            modelBuilder.Entity<LibraryPermission>(entity =>
+            {
+                entity.HasKey(lp => lp.Id);
+
+                entity.HasOne(lp => lp.Library)
+                      .WithMany(l => l.LibraryPermissions)
+                      .HasForeignKey(lp => lp.LibraryId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(lp => lp.Permission)
+                      .WithMany(p => p.LibraryPermissions)
+                      .HasForeignKey(lp => lp.PermissionId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // ─── RolePermissions ──────────────────────────────────────────────
