@@ -328,33 +328,92 @@ namespace Multi_Library_Management_Api.Data
             // Permissions
             var permissions = new List<Permission>
             {
-                new() { Id = 1,  Name = "CREATE_LIBRARY",      Module = "Library",      Description = "Create library",              IsActive = true, CreatedDate = seedDate },
-                new() { Id = 2,  Name = "EDIT_LIBRARY",        Module = "Library",      Description = "Edit library",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 3,  Name = "DELETE_LIBRARY",      Module = "Library",      Description = "Delete library",              IsActive = true, CreatedDate = seedDate },
-                new() { Id = 4,  Name = "VIEW_LIBRARY",        Module = "Library",      Description = "View library",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 5,  Name = "CREATE_FLOOR",        Module = "Floor",        Description = "Create floor",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 6,  Name = "EDIT_FLOOR",          Module = "Floor",        Description = "Edit floor",                  IsActive = true, CreatedDate = seedDate },
-                new() { Id = 7,  Name = "DELETE_FLOOR",        Module = "Floor",        Description = "Delete floor",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 8,  Name = "VIEW_FLOOR",          Module = "Floor",        Description = "View floor",                  IsActive = true, CreatedDate = seedDate },
-                new() { Id = 13, Name = "CREATE_TABLE",        Module = "Table",        Description = "Create table",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 14, Name = "EDIT_TABLE",          Module = "Table",        Description = "Edit table",                  IsActive = true, CreatedDate = seedDate },
-                new() { Id = 15, Name = "DELETE_TABLE",        Module = "Table",        Description = "Delete table",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 16, Name = "VIEW_TABLE",          Module = "Table",        Description = "View table",                  IsActive = true, CreatedDate = seedDate },
-                new() { Id = 17, Name = "CREATE_SEAT",         Module = "Seat",         Description = "Create seat",                 IsActive = true, CreatedDate = seedDate },
-                new() { Id = 18, Name = "EDIT_SEAT",           Module = "Seat",         Description = "Edit seat",                   IsActive = true, CreatedDate = seedDate },
-                new() { Id = 19, Name = "DELETE_SEAT",         Module = "Seat",         Description = "Delete seat",                 IsActive = true, CreatedDate = seedDate },
-                new() { Id = 20, Name = "VIEW_SEAT",           Module = "Seat",         Description = "View seat",                   IsActive = true, CreatedDate = seedDate },
-                new() { Id = 21, Name = "CREATE_STUDENT",      Module = "Student",      Description = "Create student",              IsActive = true, CreatedDate = seedDate },
-                new() { Id = 22, Name = "EDIT_STUDENT",        Module = "Student",      Description = "Edit student",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 23, Name = "DELETE_STUDENT",      Module = "Student",      Description = "Delete student",              IsActive = true, CreatedDate = seedDate },
-                new() { Id = 24, Name = "VIEW_STUDENT",        Module = "Student",      Description = "View student",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 25, Name = "CREATE_REGISTRATION", Module = "Registration", Description = "Create registration",         IsActive = true, CreatedDate = seedDate },
-                new() { Id = 26, Name = "EDIT_REGISTRATION",   Module = "Registration", Description = "Edit registration",           IsActive = true, CreatedDate = seedDate },
-                new() { Id = 27, Name = "VIEW_REGISTRATION",   Module = "Registration", Description = "View registration",           IsActive = true, CreatedDate = seedDate },
-                new() { Id = 28, Name = "CREATE_PAYMENT",      Module = "Payment",      Description = "Create payment",              IsActive = true, CreatedDate = seedDate },
-                new() { Id = 29, Name = "VIEW_PAYMENT",        Module = "Payment",      Description = "View payment",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 30, Name = "VIEW_REPORT",         Module = "Report",       Description = "View reports",                IsActive = true, CreatedDate = seedDate },
-                new() { Id = 31, Name = "RFID_ACCESS",         Module = "RFID",         Description = "Manage RFID gate access",     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 1,  Name = "VIEW_DASHBOARD",                      Module = "Dashboard",          Description = "View dashboard",                          IsActive = true, CreatedDate = seedDate },
+
+                // ====================== LIBRARY ======================
+                new() { Id = 2,  Name = "CREATE_LIBRARY",                      Module = "Library",            Description = "Create library",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 3,  Name = "EDIT_LIBRARY",                        Module = "Library",            Description = "Edit library",                            IsActive = true, CreatedDate = seedDate },
+                new() { Id = 4,  Name = "DELETE_LIBRARY",                      Module = "Library",            Description = "Delete library",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 5,  Name = "VIEW_LIBRARY",                        Module = "Library",            Description = "View library",                            IsActive = true, CreatedDate = seedDate },
+
+                // ====================== SECTION ======================
+                new() { Id = 6,  Name = "CREATE_SECTION",                      Module = "Section",            Description = "Create section",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 7,  Name = "EDIT_SECTION",                        Module = "Section",            Description = "Edit section",                            IsActive = true, CreatedDate = seedDate },
+                new() { Id = 8,  Name = "DELETE_SECTION",                      Module = "Section",            Description = "Delete section",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 9,  Name = "VIEW_SECTION",                        Module = "Section",            Description = "View section",                            IsActive = true, CreatedDate = seedDate },
+
+                // ====================== SEAT ======================
+                new() { Id = 10, Name = "CREATE_SEAT",                         Module = "Seat",               Description = "Create seat",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 11, Name = "EDIT_SEAT",                           Module = "Seat",               Description = "Edit seat",                               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 12, Name = "DELETE_SEAT",                         Module = "Seat",               Description = "Delete seat",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 13, Name = "VIEW_SEAT",                           Module = "Seat",               Description = "View seat",                               IsActive = true, CreatedDate = seedDate },
+
+                // ====================== STUDENT ======================
+                new() { Id = 14, Name = "CREATE_STUDENT",                      Module = "Student",            Description = "Create student",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 15, Name = "EDIT_STUDENT",                        Module = "Student",            Description = "Edit student",                            IsActive = true, CreatedDate = seedDate },
+                new() { Id = 16, Name = "DELETE_STUDENT",                      Module = "Student",            Description = "Delete student",                          IsActive = true, CreatedDate = seedDate },
+                new() { Id = 17, Name = "VIEW_STUDENT",                        Module = "Student",            Description = "View student",                            IsActive = true, CreatedDate = seedDate },
+
+                // ====================== REGISTRATION ======================
+                new() { Id = 18, Name = "CREATE_REGISTRATION",                 Module = "Registration",       Description = "Create registration",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 19, Name = "EDIT_REGISTRATION",                   Module = "Registration",       Description = "Edit registration",                       IsActive = true, CreatedDate = seedDate },
+                new() { Id = 20, Name = "VIEW_REGISTRATION",                   Module = "Registration",       Description = "View registration",                       IsActive = true, CreatedDate = seedDate },
+                new() { Id = 21, Name = "DELETE_REGISTRATION",                 Module = "Registration",       Description = "Delete registration",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 22, Name = "TODAY_DUE_REGISTRATION",              Module = "Registration",       Description = "View today due registration",             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 23, Name = "DUE_REGISTRATION",                    Module = "Registration",       Description = "View due registration",                   IsActive = true, CreatedDate = seedDate },
+                new() { Id = 24, Name = "CANCEL_REGISTRATION",                 Module = "Registration",       Description = "Cancel registration",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 25, Name = "BULK_WHATSAPP_MESSAGE_REGISTRATION",  Module = "Registration",       Description = "Send bulk WhatsApp message",              IsActive = true, CreatedDate = seedDate },
+                new() { Id = 26, Name = "INDIVIDUAL_WHATSAPP_MESSAGE",         Module = "Registration",       Description = "Send individual WhatsApp message",        IsActive = true, CreatedDate = seedDate },
+                new() { Id = 27, Name = "PAYMENT_HISTORY",                     Module = "Registration",       Description = "View payment history",                    IsActive = true, CreatedDate = seedDate },
+                new() { Id = 28, Name = "CANCEL_TAB",                          Module = "Registration",       Description = "Access cancel tab",                       IsActive = true, CreatedDate = seedDate },
+                new() { Id = 29, Name = "RENEWAL_ACTION_TAB",                  Module = "Registration",       Description = "Access renewal action tab",               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 30, Name = "SEND_BILL_WHATSAPP",                  Module = "Registration",       Description = "Send bill via WhatsApp",                  IsActive = true, CreatedDate = seedDate },
+                new() { Id = 31, Name = "SEND_BILL_EMAIL",                     Module = "Registration",       Description = "Send bill via email",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 32, Name = "STUDENT_REGISTRATION_QR",             Module = "Registration",       Description = "Generate student registration QR",        IsActive = true, CreatedDate = seedDate },
+                new() { Id = 33, Name = "EXPIRED_REGISTRATION",                Module = "Registration",       Description = "View expired registrations",              IsActive = true, CreatedDate = seedDate },
+
+                // ====================== ATTENDANCE ======================
+                new() { Id = 34, Name = "CREATE_ATTENDANCE",                   Module = "Attendance",         Description = "Create attendance",                       IsActive = true, CreatedDate = seedDate },
+                new() { Id = 35, Name = "VIEW_ATTENDANCE",                     Module = "Attendance",         Description = "View attendance",                         IsActive = true, CreatedDate = seedDate },
+                new() { Id = 36, Name = "ATTENDANCE_QR",                       Module = "Attendance",         Description = "Generate attendance QR",                  IsActive = true, CreatedDate = seedDate },
+
+                // ====================== SEATING LAYOUT ======================
+                new() { Id = 37, Name = "VIEW_SEATING_LAYOUT",                 Module = "SeatingLayout",      Description = "View seating layout",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 38, Name = "TABLE_REGISTRATION",                  Module = "SeatingLayout",      Description = "Table registration",                      IsActive = true, CreatedDate = seedDate },
+
+                // ====================== BATCH ======================
+                new() { Id = 39, Name = "CREATE_BATCH",                        Module = "Batch",              Description = "Create batch",                            IsActive = true, CreatedDate = seedDate },
+                new() { Id = 40, Name = "EDIT_BATCH",                          Module = "Batch",              Description = "Edit batch",                              IsActive = true, CreatedDate = seedDate },
+                new() { Id = 41, Name = "DELETE_BATCH",                        Module = "Batch",              Description = "Delete batch",                            IsActive = true, CreatedDate = seedDate },
+                new() { Id = 42, Name = "VIEW_BATCH",                          Module = "Batch",              Description = "View batch",                              IsActive = true, CreatedDate = seedDate },
+
+                // ====================== USER MANAGEMENT ======================
+                new() { Id = 43, Name = "CREATE_USER",                         Module = "UserManagement",     Description = "Create user",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 44, Name = "EDIT_USER",                           Module = "UserManagement",     Description = "Edit user",                               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 45, Name = "DELETE_USER",                         Module = "UserManagement",     Description = "Delete user",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 46, Name = "VIEW_USER",                           Module = "UserManagement",     Description = "View user",                               IsActive = true, CreatedDate = seedDate },
+
+                // ====================== ROLE MANAGEMENT ======================
+                new() { Id = 47, Name = "CREATE_ROLE",                         Module = "RoleManagement",     Description = "Create role",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 48, Name = "EDIT_ROLE",                           Module = "RoleManagement",     Description = "Edit role",                               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 49, Name = "DELETE_ROLE",                         Module = "RoleManagement",     Description = "Delete role",                             IsActive = true, CreatedDate = seedDate },
+                new() { Id = 50, Name = "VIEW_ROLE",                           Module = "RoleManagement",     Description = "View role",                               IsActive = true, CreatedDate = seedDate },
+
+                // ====================== GENERAL SETTINGS ======================
+                new() { Id = 51, Name = "GENERAL_SETTING_EMAIL_VIEW",                  Module = "GeneralSettings",   Description = "View email settings",                     IsActive = true, CreatedDate = seedDate },
+                new() { Id = 52, Name = "GENERAL_SETTING_EMAIL_EDIT",                  Module = "GeneralSettings",   Description = "Edit email settings",                     IsActive = true, CreatedDate = seedDate },
+
+                new() { Id = 53, Name = "GENERAL_SETTING_RAZORPAY_VIEW",               Module = "GeneralSettings",   Description = "View Razorpay settings",                  IsActive = true, CreatedDate = seedDate },
+                new() { Id = 54, Name = "GENERAL_SETTING_RAZORPAY_EDIT",               Module = "GeneralSettings",   Description = "Edit Razorpay settings",                  IsActive = true, CreatedDate = seedDate },
+
+                new() { Id = 55, Name = "GENERAL_SETTING_WHATSAPP_VIEW",               Module = "GeneralSettings",   Description = "View WhatsApp settings",                  IsActive = true, CreatedDate = seedDate },
+                new() { Id = 56, Name = "GENERAL_SETTING_WHATSAPP_LOGOUT",             Module = "GeneralSettings",   Description = "Logout WhatsApp session",                 IsActive = true, CreatedDate = seedDate },
+                new() { Id = 57, Name = "GENERAL_SETTING_WHATSAPP_INITIATE",           Module = "GeneralSettings",   Description = "Initiate WhatsApp session",               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 58, Name = "GENERAL_SETTING_WHATSAPP_STATUS",             Module = "GeneralSettings",   Description = "View WhatsApp status",                    IsActive = true, CreatedDate = seedDate },
+
+                new() { Id = 59, Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_VIEW",    Module = "GeneralSettings",   Description = "View attendance location",                IsActive = true, CreatedDate = seedDate },
+                new() { Id = 60, Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_FETCH",   Module = "GeneralSettings",   Description = "Fetch attendance location",               IsActive = true, CreatedDate = seedDate },
+                new() { Id = 61, Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_UPDATE",  Module = "GeneralSettings",   Description = "Update attendance location",              IsActive = true, CreatedDate = seedDate },
             };
             modelBuilder.Entity<Permission>().HasData(permissions);
 
