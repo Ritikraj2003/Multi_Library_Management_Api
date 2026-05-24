@@ -24,7 +24,9 @@ namespace Multi_Library_Management_Api.Repository
                     TableNumber = dto.TableNumber,
                     SeatNumber = dto.SeatNumber,
                     IsOccupied = false,
-                    IsActive = true
+                    IsActive = true,
+                    XAxis = dto.XAxis,
+                    YAxis = dto.YAxis
                 };
                 _context.TableSeats.Add(seat);
                 await _context.SaveChangesAsync();
@@ -46,6 +48,8 @@ namespace Multi_Library_Management_Api.Repository
                 seat.TableNumber = dto.TableNumber;
                 seat.SeatNumber = dto.SeatNumber;
                 seat.IsActive = dto.IsActive;
+                seat.XAxis = dto.XAxis;
+                seat.YAxis = dto.YAxis;
                 await _context.SaveChangesAsync();
                 response.Data = await BuildResponseAsync(seat.Id);
                 response.Success = true; response.Message = "Seat updated.";
@@ -112,13 +116,44 @@ namespace Multi_Library_Management_Api.Repository
                         FloorName = ts.Floor.Name,
                         LibraryName = ts.Library.Name,
                         IsOccupied = ts.IsOccupied,
-                        IsActive = ts.IsActive
+                        IsActive = ts.IsActive,
+                        XAxis = ts.XAxis,
+                        YAxis = ts.YAxis
                     }).ToListAsync();
 
                 response.Data = CommonQuery.BuildPagedResult(items, totalCount, query.PageNumber, query.PageSize);
                 response.Success = true; response.Message = "Success";
             }
             catch (Exception ex) { response.Success = false; response.Message = ex.Message; }
+            return response;
+        }
+
+        public async Task<Response<bool>> BulkUpdatePositionsAsync(List<UpdateTableSeatPositionDto> dtos)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                var seatIds = dtos.Select(d => d.Id).ToList();
+                var seats = await _context.TableSeats.Where(s => seatIds.Contains(s.Id)).ToListAsync();
+                foreach (var dto in dtos)
+                {
+                    var seat = seats.FirstOrDefault(s => s.Id == dto.Id);
+                    if (seat != null)
+                    {
+                        seat.XAxis = dto.XAxis;
+                        seat.YAxis = dto.YAxis;
+                    }
+                }
+                await _context.SaveChangesAsync();
+                response.Data = true;
+                response.Success = true;
+                response.Message = "Positions updated.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
             return response;
         }
 
@@ -129,7 +164,8 @@ namespace Multi_Library_Management_Api.Repository
                     Id = ts.Id, LibraryId = ts.LibraryId, LibraryName = ts.Library.Name,
                     FloorId = ts.FloorId, FloorName = ts.Floor.Name,
                     TableNumber = ts.TableNumber, SeatNumber = ts.SeatNumber,
-                    IsOccupied = ts.IsOccupied, IsActive = ts.IsActive
+                    IsOccupied = ts.IsOccupied, IsActive = ts.IsActive,
+                    XAxis = ts.XAxis, YAxis = ts.YAxis
                 }).FirstOrDefaultAsync();
     }
 }

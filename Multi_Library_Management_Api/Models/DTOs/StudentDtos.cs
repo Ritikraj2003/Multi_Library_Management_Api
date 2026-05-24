@@ -83,6 +83,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string? Notes { get; set; }
         public string? RFIDCode { get; set; }
         public int CreatedBy { get; set; }
+        public string PaymentMode { get; set; } = "Cash";
     }
 
     public class UpdateStudentRegistrationDto

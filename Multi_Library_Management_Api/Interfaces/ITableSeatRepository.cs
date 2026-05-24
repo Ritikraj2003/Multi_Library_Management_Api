@@ -11,5 +11,6 @@ namespace Multi_Library_Management_Api.Interfaces
         Task<Response<bool>> DeleteAsync(int id);
         Task<Response<TableSeatResponseDto>> GetByIdAsync(int id);
         Task<Response<PagedResult<TableSeatListDto>>> GetAllAsync(SearchQuery query);
+        Task<Response<bool>> BulkUpdatePositionsAsync(List<UpdateTableSeatPositionDto> dtos);
     }
 }

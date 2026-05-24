@@ -46,5 +46,12 @@ namespace Multi_Library_Management_Api.Controllers
             var result = await _repo.GetAllAsync(query);
             return Ok(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> BulkUpdatePositions([FromBody] List<UpdateTableSeatPositionDto> dtos)
+        {
+            var result = await _repo.BulkUpdatePositionsAsync(dtos);
+            return Ok(result);
+        }
     }
 }

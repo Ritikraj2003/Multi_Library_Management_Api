@@ -44,6 +44,8 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public int FloorId { get; set; }
         public string TableNumber { get; set; } = string.Empty;
         public string SeatNumber { get; set; } = string.Empty;
+        public int XAxis { get; set; } = 0;
+        public int YAxis { get; set; } = 0;
     }
 
     public class UpdateTableSeatDto
@@ -53,6 +55,15 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string TableNumber { get; set; } = string.Empty;
         public string SeatNumber { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public int XAxis { get; set; }
+        public int YAxis { get; set; }
+    }
+
+    public class UpdateTableSeatPositionDto
+    {
+        public int Id { get; set; }
+        public int XAxis { get; set; }
+        public int YAxis { get; set; }
     }
 
     public class TableSeatResponseDto
@@ -66,6 +77,8 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string SeatNumber { get; set; } = string.Empty;
         public bool IsOccupied { get; set; }
         public bool IsActive { get; set; }
+        public int XAxis { get; set; }
+        public int YAxis { get; set; }
     }
 
     public class TableSeatListDto
@@ -78,5 +91,7 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string LibraryName { get; set; } = string.Empty;
         public bool IsOccupied { get; set; }
         public bool IsActive { get; set; }
+        public int XAxis { get; set; }
+        public int YAxis { get; set; }
     }
 }

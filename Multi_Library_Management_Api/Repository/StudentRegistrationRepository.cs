@@ -82,7 +82,7 @@ namespace Multi_Library_Management_Api.Repository
                         Amount = dto.MonthlyAmount,
                         PaymentDate = DateTime.UtcNow,
                         NextDueDate = dto.DueDate,
-                        PaymentMode = "Cash",
+                        PaymentMode = string.IsNullOrEmpty(dto.PaymentMode) ? "Cash" : dto.PaymentMode,
                         CreatedBy = dto.CreatedBy
                     };
                     _context.Payments.Add(payment);
@@ -437,7 +437,6 @@ namespace Multi_Library_Management_Api.Repository
 
         public async Task<Response<PagedResult<StudentRegistrationListDto>>> GetDueStudentsAsync(SearchQuery query)
         {
-            query.SearchTerm = "DUE"; // Hacky way to signal filter if needed, or just implement here
             var q = _context.StudentRegistrations.Include(r => r.Student).Include(r => r.TableSeat)
                     .Where(r => r.Status == RegistrationStatus.Active && r.DueDate < DateTime.UtcNow.AddDays(3));
             return await ExecutePagedListAsync(q, query);
