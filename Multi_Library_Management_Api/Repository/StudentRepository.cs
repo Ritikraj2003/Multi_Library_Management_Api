@@ -53,8 +53,8 @@ namespace Multi_Library_Management_Api.Repository
                     FatherName = dto.FatherName,
                     Mobile = dto.Mobile,
                     Email = dto.Email,
-                    Address = dto.Address,
                     Gender = dto.Gender,
+                    Address = dto.Address,
                     Photo = photoPath,
                     DocumentImage = docImagePath,
                     DocumentType = dto.DocumentType,
@@ -114,8 +114,8 @@ namespace Multi_Library_Management_Api.Repository
                 student.FatherName = dto.FatherName;
                 student.Mobile = dto.Mobile;
                 student.Email = dto.Email;
-                student.Address = dto.Address;
                 student.Gender = dto.Gender;
+                student.Address = dto.Address;
                 student.DocumentType = dto.DocumentType;
                 student.DOB = dto.DOB;
                 student.IsActive = dto.IsActive;
@@ -164,7 +164,15 @@ namespace Multi_Library_Management_Api.Repository
                 var q = _context.Students.Include(s => s.Library).AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-                    q = q.Where(s => s.FullName.Contains(query.SearchTerm) || s.Mobile.Contains(query.SearchTerm));
+                {
+                    var term = query.SearchTerm.Trim().ToLower();
+                    int.TryParse(term, out var idSearch);
+                    q = q.Where(s =>
+                        s.FullName.ToLower().Contains(term) ||
+                        s.Mobile.Contains(term) ||
+                        (s.Email != null && s.Email.ToLower().Contains(term)) ||
+                        (idSearch > 0 && s.Id == idSearch));
+                }
                 if (query.IsActive.HasValue) q = q.Where(s => s.IsActive == query.IsActive.Value);
                 if (query.LibraryId.HasValue) q = q.Where(s => s.LibraryId == query.LibraryId.Value);
 
@@ -173,7 +181,7 @@ namespace Multi_Library_Management_Api.Repository
                     .Select(s => new StudentListDto
                     {
                         Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, 
-                        Mobile = s.Mobile, Email = s.Email, Address = s.Address, Gender = s.Gender,
+                        Mobile = s.Mobile, Email = s.Email, Gender = s.Gender, Address = s.Address,
                         LibraryName = s.Library.Name, Photo = s.Photo, 
                         DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, 
                         DOB = s.DOB, IsActive = s.IsActive
@@ -192,7 +200,7 @@ namespace Multi_Library_Management_Api.Repository
                 {
                     Id = s.Id, LibraryId = s.LibraryId, LibraryName = s.Library.Name,
                     FullName = s.FullName, FatherName = s.FatherName, Mobile = s.Mobile,
-                    Email = s.Email, Address = s.Address, Gender = s.Gender, Photo = s.Photo,
+                    Email = s.Email, Gender = s.Gender, Address = s.Address, Photo = s.Photo,
                     DocumentImage = s.DocumentImage, DocumentType = s.DocumentType,
                     DOB = s.DOB, IsActive = s.IsActive, CreatedDate = s.CreatedDate
                 }).FirstOrDefaultAsync();

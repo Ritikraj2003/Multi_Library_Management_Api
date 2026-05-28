@@ -8,8 +8,8 @@ namespace Multi_Library_Management_Api.Models
         public string? FatherName { get; set; }
         public string Mobile { get; set; } = string.Empty;
         public string? Email { get; set; }
-        public string? Address { get; set; }
         public string? Gender { get; set; }
+        public string? Address { get; set; }
         public string? Photo { get; set; } // This will be StudentImage
         public string? DocumentImage { get; set; }
         public string? DocumentType { get; set; }
@@ -24,3 +24,5 @@ namespace Multi_Library_Management_Api.Models
         public ICollection<GateAccessLog> GateAccessLogs { get; set; } = new List<GateAccessLog>();
     }
 }
+
+
