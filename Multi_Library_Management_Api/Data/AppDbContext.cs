@@ -168,6 +168,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(s => s.FullName).IsRequired().HasMaxLength(150);
                 entity.Property(s => s.Mobile).IsRequired().HasMaxLength(20);
                 entity.Property(s => s.Email).HasMaxLength(200);
+                entity.Property(s => s.Gender).HasMaxLength(20);
                 entity.Property(s => s.IsActive).HasDefaultValue(true);
                 entity.Property(s => s.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
 
