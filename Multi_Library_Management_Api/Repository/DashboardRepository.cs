@@ -23,10 +23,6 @@ namespace Multi_Library_Management_Api.Repository
                 stats.TotalStudents = await _context.Students
                     .CountAsync(s => s.LibraryId == libraryId);
 
-                // 1a. Active Students
-                stats.ActiveStudents = await _context.Students
-                    .CountAsync(s => s.LibraryId == libraryId && s.IsActive);
-
                 // 1b. Expired Students (Assuming status might indicate or just inactive for now, or based on registration)
                 stats.ExpiredStudents = await _context.StudentRegistrations
                     .CountAsync(r => r.LibraryId == libraryId && r.Status == RegistrationStatus.Expired);
@@ -71,6 +67,10 @@ namespace Multi_Library_Management_Api.Repository
                     .Distinct()
                     .CountAsync();
 
+                // Total Batches
+                stats.TotalBatches = await _context.Batches
+                    .CountAsync(b => b.LibraryId == libraryId && b.IsActive);
+
                 // 4. Payment Modes distribution
                 stats.PaymentModes = await _context.Payments
                     .Where(p => p.LibraryId == libraryId)
@@ -92,6 +92,20 @@ namespace Multi_Library_Management_Api.Repository
                         BatchName = g.Key,
                         StudentCount = g.Count()
                     }).ToListAsync();
+
+                // 7. Gender distribution
+                var genderData = await _context.StudentRegistrations
+                    .Include(r => r.Student)
+                    .Where(r => r.LibraryId == libraryId && r.Status == RegistrationStatus.Active)
+                    .ToListAsync();
+                    
+                stats.GenderStats = genderData
+                    .GroupBy(r => string.IsNullOrWhiteSpace(r.Student.Gender) ? "Unknown" : r.Student.Gender)
+                    .Select(g => new GenderStatDto
+                    {
+                        Gender = g.Key,
+                        Count = g.Count()
+                    }).ToList();
 
                 response.Data = stats;
                 response.Success = true;
@@ -169,7 +183,7 @@ namespace Multi_Library_Management_Api.Repository
                 alerts.ExpiringToday = await _context.StudentRegistrations
                     .Include(r => r.Student)
                     .Include(r => r.Batch)
-                    .Where(r => r.LibraryId == libraryId && r.DueDate.Date == today)
+                    .Where(r => r.LibraryId == libraryId && r.DueDate.Date == today && r.Status == RegistrationStatus.Active)
                     .Select(r => new AlertStudentDto
                     {
                         StudentId = r.StudentId,
@@ -194,3 +208,4 @@ namespace Multi_Library_Management_Api.Repository
         }
     }
 }
+

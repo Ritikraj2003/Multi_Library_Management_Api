@@ -3,7 +3,6 @@ namespace Multi_Library_Management_Api.Models.DTOs
     public class DashboardStatsDto
     {
         public int TotalStudents { get; set; }
-        public int ActiveStudents { get; set; }
         public int ExpiredStudents { get; set; }
         public int TodayRenewals { get; set; }
         public decimal PendingFees { get; set; }
@@ -17,8 +16,16 @@ namespace Multi_Library_Management_Api.Models.DTOs
         // Keep existing lists for backwards compatibility or basic charts
         public int ActiveRegistrations { get; set; }
         public int TotalTables { get; set; }
+        public int TotalBatches { get; set; }
         public List<PaymentModeStatDto> PaymentModes { get; set; } = new();
         public List<BatchStatDto> BatchStats { get; set; } = new();
+        public List<GenderStatDto> GenderStats { get; set; } = new();
+    }
+
+    public class GenderStatDto
+    {
+        public string Gender { get; set; } = string.Empty;
+        public int Count { get; set; }
     }
 
     public class PaymentModeStatDto

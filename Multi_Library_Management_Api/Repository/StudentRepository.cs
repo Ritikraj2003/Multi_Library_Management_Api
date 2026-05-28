@@ -54,6 +54,7 @@ namespace Multi_Library_Management_Api.Repository
                     Mobile = dto.Mobile,
                     Email = dto.Email,
                     Address = dto.Address,
+                    Gender = dto.Gender,
                     Photo = photoPath,
                     DocumentImage = docImagePath,
                     DocumentType = dto.DocumentType,
@@ -114,6 +115,7 @@ namespace Multi_Library_Management_Api.Repository
                 student.Mobile = dto.Mobile;
                 student.Email = dto.Email;
                 student.Address = dto.Address;
+                student.Gender = dto.Gender;
                 student.DocumentType = dto.DocumentType;
                 student.DOB = dto.DOB;
                 student.IsActive = dto.IsActive;
@@ -171,7 +173,7 @@ namespace Multi_Library_Management_Api.Repository
                     .Select(s => new StudentListDto
                     {
                         Id = s.Id, FullName = s.FullName, FatherName = s.FatherName, 
-                        Mobile = s.Mobile, Email = s.Email, Address = s.Address,
+                        Mobile = s.Mobile, Email = s.Email, Address = s.Address, Gender = s.Gender,
                         LibraryName = s.Library.Name, Photo = s.Photo, 
                         DocumentImage = s.DocumentImage, DocumentType = s.DocumentType, 
                         DOB = s.DOB, IsActive = s.IsActive
@@ -190,7 +192,7 @@ namespace Multi_Library_Management_Api.Repository
                 {
                     Id = s.Id, LibraryId = s.LibraryId, LibraryName = s.Library.Name,
                     FullName = s.FullName, FatherName = s.FatherName, Mobile = s.Mobile,
-                    Email = s.Email, Address = s.Address, Photo = s.Photo,
+                    Email = s.Email, Address = s.Address, Gender = s.Gender, Photo = s.Photo,
                     DocumentImage = s.DocumentImage, DocumentType = s.DocumentType,
                     DOB = s.DOB, IsActive = s.IsActive, CreatedDate = s.CreatedDate
                 }).FirstOrDefaultAsync();
