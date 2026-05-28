@@ -7,5 +7,7 @@ namespace Multi_Library_Management_Api.Interfaces
         Task<Response<List<GeneralSetting>>> GetByLibraryIdAsync(int libraryId);
         Task<Response<GeneralSetting>> UpsertAsync(int libraryId, string key, string value);
         Task<Response<bool>> DeleteAsync(int id);
+        Task<Response<bool>> UpsertListAsync(List<Multi_Library_Management_Api.Controllers.UpsertSettingDto> dtos);
     }
 }
+

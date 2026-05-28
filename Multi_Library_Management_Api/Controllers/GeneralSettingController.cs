@@ -22,6 +22,12 @@ namespace Multi_Library_Management_Api.Controllers
             return Ok(await _repo.UpsertAsync(dto.LibraryId, dto.Key, dto.Value));
         }
 
+                [HttpPost]
+        public async Task<IActionResult> UpsertList([FromBody] List<UpsertSettingDto> dtos)
+        {
+            return Ok(await _repo.UpsertListAsync(dtos));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -36,3 +42,4 @@ namespace Multi_Library_Management_Api.Controllers
         public string Value { get; set; } = string.Empty;
     }
 }
+
