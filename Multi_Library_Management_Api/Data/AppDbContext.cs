@@ -44,7 +44,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(l => l.DocumentImage).HasMaxLength(500);
                 entity.Property(l => l.DocumentType).HasMaxLength(100);
                 entity.Property(l => l.IsActive).HasDefaultValue(true);
-                entity.Property(l => l.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(l => l.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
             // ─── Roles ────────────────────────────────────────────────────────
@@ -53,7 +53,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.HasKey(r => r.Id);
                 entity.Property(r => r.Name).IsRequired().HasMaxLength(150);
                 entity.Property(r => r.IsActive).HasDefaultValue(true);
-                entity.Property(r => r.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(r => r.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(r => r.Library)
                       .WithMany(l => l.Roles)
@@ -68,7 +68,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
                 entity.Property(p => p.Module).IsRequired().HasMaxLength(100);
                 entity.Property(p => p.IsActive).HasDefaultValue(true);
-                entity.Property(p => p.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(p => p.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
             // ─── LibraryPermissions ───────────────────────────────────────────
@@ -115,7 +115,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(u => u.IsSuperadmin).HasDefaultValue(false);
                 entity.Property(u => u.ProfileImage).HasMaxLength(500);
                 entity.Property(u => u.IsActive).HasDefaultValue(true);
-                entity.Property(u => u.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(u => u.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(u => u.Role)
                       .WithMany(r => r.Users)
@@ -170,7 +170,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(s => s.Email).HasMaxLength(200);
                 entity.Property(s => s.Gender).HasMaxLength(20);
                 entity.Property(s => s.IsActive).HasDefaultValue(true);
-                entity.Property(s => s.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(s => s.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(s => s.Library)
                       .WithMany(l => l.Students)
@@ -185,7 +185,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(sr => sr.MonthlyAmount).HasColumnType("decimal(10,2)");
                 entity.Property(sr => sr.SecurityAmount).HasColumnType("decimal(10,2)");
                 entity.Property(sr => sr.RFIDCode).HasMaxLength(100);
-                entity.Property(sr => sr.RegistrationDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(sr => sr.RegistrationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(sr => sr.Status).HasConversion<int>();
 
                 entity.HasOne(sr => sr.Student)
@@ -222,7 +222,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(b => b.StartTime).HasMaxLength(50);
                 entity.Property(b => b.EndTime).HasMaxLength(50);
                 entity.Property(b => b.IsActive).HasDefaultValue(true);
-                entity.Property(b => b.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(b => b.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(b => b.Library)
                       .WithMany()
@@ -287,7 +287,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(gs => gs.EmailAppPassword).HasMaxLength(500);
                 entity.Property(gs => gs.RazorpayKey).HasMaxLength(256);
                 entity.Property(gs => gs.RazorpaySecretKey).HasMaxLength(500);
-                entity.Property(gs => gs.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(gs => gs.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(gs => gs.Library)
                       .WithMany()
@@ -302,7 +302,7 @@ namespace Multi_Library_Management_Api.Data
                 entity.Property(al => al.Latitude).IsRequired();
                 entity.Property(al => al.Longitude).IsRequired();
                 entity.Property(al => al.RadiusInMeters).IsRequired();
-                entity.Property(al => al.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
+                entity.Property(al => al.CreatedDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(al => al.Library)
                       .WithMany()

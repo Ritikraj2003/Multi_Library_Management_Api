@@ -23,15 +23,15 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
     options.MultipartHeadersLengthLimit = int.MaxValue;
 });
 
-// ─── Database (MySQL/Hostinger) ────────────────────────────────────────────────
+// ─── Database (PostgreSQL/Aiven) ────────────────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 31)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+    options.UseNpgsql(connectionString,
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null));
+            errorCodesToAdd: null));
 });
 
 // ─── JWT Authentication ────────────────────────────────────────────────────────
@@ -55,6 +55,7 @@ builder.Services.AddScoped<IGeneralSettingRepository, GeneralSettingRepository>(
 builder.Services.AddScoped<IAttendanceLocationRepository, AttendanceLocationRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IRfidAccessRepository, RfidAccessRepository>();
+builder.Services.AddScoped<IRazorpayService, RazorpayService>();
 
 // ─── Controllers ───────────────────────────────────────────────────────────────
 builder.Services.AddHttpClient();
