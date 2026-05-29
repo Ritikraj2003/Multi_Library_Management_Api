@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Multi_Library_Management_Api.Interfaces;
+using Multi_Library_Management_Api.Models.DTOs;
 
 namespace Multi_Library_Management_Api.Controllers
 {
@@ -16,23 +17,22 @@ namespace Multi_Library_Management_Api.Controllers
             return Ok(await _repo.GetByLibraryIdAsync(libraryId));
         }
 
+        [HttpGet("{libraryId}")]
+        public async Task<IActionResult> IsRazorpayVerified(int libraryId)
+        {
+            return Ok(await _repo.IsRazorpayVerifiedAsync(libraryId));
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Upsert([FromBody] UpsertSettingDto dto)
+        public async Task<IActionResult> UpsertEmail([FromBody] UpsertEmailSettingsDto dto)
         {
-            return Ok(await _repo.UpsertAsync(dto.LibraryId, dto.Key, dto.Value));
+            return Ok(await _repo.UpsertEmailSettingsAsync(dto));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        public async Task<IActionResult> UpsertRazorpay([FromBody] UpsertRazorpaySettingsDto dto)
         {
-            return Ok(await _repo.DeleteAsync(id));
+            return Ok(await _repo.UpsertRazorpaySettingsAsync(dto));
         }
-    }
-
-    public class UpsertSettingDto
-    {
-        public int LibraryId { get; set; }
-        public string Key { get; set; } = string.Empty;
-        public string Value { get; set; } = string.Empty;
     }
 }

@@ -75,6 +75,15 @@ namespace Multi_Library_Management_Api.Repository
                     await _context.SaveChangesAsync(); // Save to get Id for payment
 
                     // 5. Create first Payment history
+                    var paymentMode = string.IsNullOrEmpty(dto.PaymentMode) ? "Cash" : dto.PaymentMode;
+                    if (paymentMode.Equals("Razorpay", StringComparison.OrdinalIgnoreCase)
+                        && string.IsNullOrWhiteSpace(dto.RazorpayPaymentId))
+                    {
+                        response.Success = false;
+                        response.Message = "Razorpay payment is required before registration.";
+                        return response;
+                    }
+
                     var payment = new Payment
                     {
                         LibraryId = dto.LibraryId,
@@ -82,7 +91,9 @@ namespace Multi_Library_Management_Api.Repository
                         Amount = dto.MonthlyAmount,
                         PaymentDate = DateTime.UtcNow,
                         NextDueDate = dto.DueDate,
-                        PaymentMode = string.IsNullOrEmpty(dto.PaymentMode) ? "Cash" : dto.PaymentMode,
+                        PaymentMode = paymentMode,
+                        TransactionId = dto.RazorpayPaymentId,
+                        Notes = dto.RazorpayOrderId,
                         CreatedBy = dto.CreatedBy
                     };
                     _context.Payments.Add(payment);
@@ -538,12 +549,11 @@ namespace Multi_Library_Management_Api.Repository
                     .Select(p => p.PaymentMode)
                     .FirstOrDefaultAsync() ?? "Cash";
 
-                // 2. Fetch configured library name
-                var libraryNameSetting = await _context.GeneralSettings
-                    .Where(s => s.LibraryId == registration.LibraryId && s.Key == "library_name")
-                    .Select(s => s.Value)
-                    .FirstOrDefaultAsync();
-                var libraryName = libraryNameSetting ?? "MBR Library";
+                // 2. Fetch library name
+                var libraryName = await _context.Libraries
+                    .Where(l => l.Id == registration.LibraryId)
+                    .Select(l => l.Name)
+                    .FirstOrDefaultAsync() ?? "MBR Library";
 
                 // 3. Set up email fields
                 var recipientEmail = !string.IsNullOrEmpty(dto.CustomEmail) ? dto.CustomEmail : registration.Student.Email;
@@ -707,6 +717,46 @@ namespace Multi_Library_Management_Api.Repository
                 };
 
                 response.Data = dto;
+                response.Success = true;
+                response.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<Response<List<int>>> GetActiveStudentIdsByLibraryAsync(int libraryId)
+        {
+            var response = new Response<List<int>>();
+            try
+            {
+                var ids = await _context.StudentRegistrations
+                    .Where(r => r.Status == RegistrationStatus.Active && r.Student.LibraryId == libraryId)
+                    .Select(r => r.StudentId)
+                    .Distinct()
+                    .ToListAsync();
+                response.Data = ids;
+                response.Success = true;
+                response.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<Response<bool>> HasActiveRegistrationAsync(int studentId)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _context.StudentRegistrations.AnyAsync(
+                    r => r.StudentId == studentId && r.Status == RegistrationStatus.Active);
                 response.Success = true;
                 response.Message = "Success";
             }

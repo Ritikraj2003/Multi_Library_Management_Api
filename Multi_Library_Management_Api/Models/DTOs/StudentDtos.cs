@@ -88,6 +88,8 @@ namespace Multi_Library_Management_Api.Models.DTOs
         public string? RFIDCode { get; set; }
         public int CreatedBy { get; set; }
         public string PaymentMode { get; set; } = "Cash";
+        public string? RazorpayOrderId { get; set; }
+        public string? RazorpayPaymentId { get; set; }
     }
 
     public class UpdateStudentRegistrationDto

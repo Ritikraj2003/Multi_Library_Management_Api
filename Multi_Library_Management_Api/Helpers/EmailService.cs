@@ -24,14 +24,13 @@ namespace Multi_Library_Management_Api.Helpers
             try
             {
                 var settings = await _context.GeneralSettings
-                    .Where(gs => gs.LibraryId == libraryId)
-                    .ToListAsync();
+                    .FirstOrDefaultAsync(gs => gs.LibraryId == libraryId);
 
-                var smtpHost = settings.FirstOrDefault(s => s.Key.Equals("host", StringComparison.OrdinalIgnoreCase))?.Value;
-                var smtpPortStr = settings.FirstOrDefault(s => s.Key.Equals("port", StringComparison.OrdinalIgnoreCase))?.Value;
-                var smtpUser = settings.FirstOrDefault(s => s.Key.Equals("email", StringComparison.OrdinalIgnoreCase))?.Value;
-                var smtpPass = settings.FirstOrDefault(s => s.Key.Equals("password", StringComparison.OrdinalIgnoreCase))?.Value;
-                var smtpFrom = settings.FirstOrDefault(s => s.Key.Equals("email", StringComparison.OrdinalIgnoreCase))?.Value;
+                var smtpHost = settings?.EmailSmtp;
+                var smtpPort = settings?.EmailPort;
+                var smtpUser = settings?.Email;
+                var smtpPass = settings?.EmailAppPassword;
+                var smtpFrom = settings?.Email;
 
                 if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUser) || string.IsNullOrEmpty(smtpPass))
                 {
@@ -39,9 +38,9 @@ namespace Multi_Library_Management_Api.Helpers
                     return;
                 }
 
-                int smtpPort = int.TryParse(smtpPortStr, out var port) ? port : 587;
+                int smtpPortNumber = smtpPort ?? 587;
 
-                using (var client = new SmtpClient(smtpHost, smtpPort))
+                using (var client = new SmtpClient(smtpHost, smtpPortNumber))
                 {
                     client.EnableSsl = true;
                     client.Credentials = new NetworkCredential(smtpUser, smtpPass);

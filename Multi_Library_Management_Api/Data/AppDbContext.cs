@@ -281,8 +281,12 @@ namespace Multi_Library_Management_Api.Data
             modelBuilder.Entity<GeneralSetting>(entity =>
             {
                 entity.HasKey(gs => gs.Id);
-                entity.Property(gs => gs.Key).IsRequired().HasMaxLength(100);
-                entity.Property(gs => gs.Value).IsRequired();
+                entity.HasIndex(gs => gs.LibraryId).IsUnique();
+                entity.Property(gs => gs.Email).HasMaxLength(256);
+                entity.Property(gs => gs.EmailSmtp).HasMaxLength(256);
+                entity.Property(gs => gs.EmailAppPassword).HasMaxLength(500);
+                entity.Property(gs => gs.RazorpayKey).HasMaxLength(256);
+                entity.Property(gs => gs.RazorpaySecretKey).HasMaxLength(500);
                 entity.Property(gs => gs.CreatedDate).HasDefaultValueSql("(UTC_TIMESTAMP())");
 
                 entity.HasOne(gs => gs.Library)

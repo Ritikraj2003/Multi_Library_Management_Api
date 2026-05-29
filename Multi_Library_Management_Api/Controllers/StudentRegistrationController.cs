@@ -48,6 +48,20 @@ namespace Multi_Library_Management_Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("active-student-ids")]
+        public async Task<IActionResult> GetActiveStudentIds([FromQuery] int libraryId)
+        {
+            var result = await _repo.GetActiveStudentIdsByLibraryAsync(libraryId);
+            return Ok(result);
+        }
+
+        [HttpGet("has-active/{studentId}")]
+        public async Task<IActionResult> HasActiveRegistration(int studentId)
+        {
+            var result = await _repo.HasActiveRegistrationAsync(studentId);
+            return Ok(result);
+        }
+
         [HttpGet("due")]
         public async Task<IActionResult> GetDue([FromQuery] SearchQuery query)
         {
