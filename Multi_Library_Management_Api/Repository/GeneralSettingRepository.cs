@@ -34,7 +34,7 @@ namespace Multi_Library_Management_Api.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
+                response.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return response;
         }
@@ -56,7 +56,7 @@ namespace Multi_Library_Management_Api.Repository
             {
                 response.Success = false;
                 response.Data = false;
-                response.Message = ex.Message;
+                response.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return response;
         }
@@ -83,7 +83,7 @@ namespace Multi_Library_Management_Api.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
+                response.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return response;
         }
@@ -112,7 +112,7 @@ namespace Multi_Library_Management_Api.Repository
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = ex.Message;
+                response.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return response;
         }
