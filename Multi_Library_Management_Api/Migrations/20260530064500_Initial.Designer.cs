@@ -11,7 +11,7 @@ using Multi_Library_Management_Api.Data;
 namespace Multi_Library_Management_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260530025341_Initial")]
+    [Migration("20260530064500_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
