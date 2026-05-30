@@ -40,6 +40,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 // ─── Dependency Injection (Separate Repositories) ───────────────────────────────
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRazorpayService, RazorpayService>();
 builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();

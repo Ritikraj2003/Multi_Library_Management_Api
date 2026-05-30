@@ -11,8 +11,8 @@ using Multi_Library_Management_Api.Data;
 namespace Multi_Library_Management_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260511131217_AddStudentUploadsAndDOB")]
-    partial class AddStudentUploadsAndDOB
+    [Migration("20260530025341_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,6 +21,39 @@ namespace Multi_Library_Management_Api.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double");
+
+                    b.Property<double>("RadiusInMeters")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("AttendanceLocations");
+                });
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLog", b =>
                 {
@@ -36,6 +69,9 @@ namespace Multi_Library_Management_Api.Migrations
 
                     b.Property<DateTime?>("ExitTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -147,6 +183,57 @@ namespace Multi_Library_Management_Api.Migrations
                     b.ToTable("GateAccessLogs");
                 });
 
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.GeneralSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValueSql("(UTC_TIMESTAMP())");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("EmailAppPassword")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("EmailPort")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailSmtp")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<bool>("IsRazorpayVerified")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazorpayKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("RazorpaySecretKey")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId")
+                        .IsUnique();
+
+                    b.ToTable("GeneralSettings");
+                });
+
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Library", b =>
                 {
                     b.Property<int>("Id")
@@ -165,6 +252,14 @@ namespace Multi_Library_Management_Api.Migrations
                         .HasColumnType("datetime(6)")
                         .HasDefaultValueSql("(UTC_TIMESTAMP())");
 
+                    b.Property<string>("DocumentImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DocumentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
@@ -173,6 +268,10 @@ namespace Multi_Library_Management_Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
+
+                    b.Property<string>("LibraryIcon")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Mobile")
                         .HasMaxLength(20)
@@ -196,6 +295,27 @@ namespace Multi_Library_Management_Api.Migrations
                     b.ToTable("Libraries");
                 });
 
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.LibraryPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("LibraryPermissions");
+                });
+
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -206,6 +326,9 @@ namespace Multi_Library_Management_Api.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibraryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("NextDueDate")
@@ -232,6 +355,8 @@ namespace Multi_Library_Management_Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
+
+                    b.HasIndex("LibraryId");
 
                     b.HasIndex("RegistrationId");
 
@@ -276,6 +401,15 @@ namespace Multi_Library_Management_Api.Migrations
                         {
                             Id = 1,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View dashboard",
+                            IsActive = true,
+                            Module = "Dashboard",
+                            Name = "VIEW_DASHBOARD"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create library",
                             IsActive = true,
                             Module = "Library",
@@ -283,7 +417,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 3,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit library",
                             IsActive = true,
@@ -292,7 +426,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 4,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete library",
                             IsActive = true,
@@ -301,7 +435,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 5,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View library",
                             IsActive = true,
@@ -310,79 +444,43 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 5,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create floor",
-                            IsActive = true,
-                            Module = "Floor",
-                            Name = "CREATE_FLOOR"
-                        },
-                        new
-                        {
                             Id = 6,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Edit floor",
+                            Description = "Create section",
                             IsActive = true,
-                            Module = "Floor",
-                            Name = "EDIT_FLOOR"
+                            Module = "Section",
+                            Name = "CREATE_SECTION"
                         },
                         new
                         {
                             Id = 7,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Delete floor",
+                            Description = "Edit section",
                             IsActive = true,
-                            Module = "Floor",
-                            Name = "DELETE_FLOOR"
+                            Module = "Section",
+                            Name = "EDIT_SECTION"
                         },
                         new
                         {
                             Id = 8,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View floor",
+                            Description = "Delete section",
                             IsActive = true,
-                            Module = "Floor",
-                            Name = "VIEW_FLOOR"
+                            Module = "Section",
+                            Name = "DELETE_SECTION"
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 9,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create table",
+                            Description = "View section",
                             IsActive = true,
-                            Module = "Table",
-                            Name = "CREATE_TABLE"
+                            Module = "Section",
+                            Name = "VIEW_SECTION"
                         },
                         new
                         {
-                            Id = 14,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Edit table",
-                            IsActive = true,
-                            Module = "Table",
-                            Name = "EDIT_TABLE"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Delete table",
-                            IsActive = true,
-                            Module = "Table",
-                            Name = "DELETE_TABLE"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View table",
-                            IsActive = true,
-                            Module = "Table",
-                            Name = "VIEW_TABLE"
-                        },
-                        new
-                        {
-                            Id = 17,
+                            Id = 10,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create seat",
                             IsActive = true,
@@ -391,7 +489,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 11,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit seat",
                             IsActive = true,
@@ -400,7 +498,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 19,
+                            Id = 12,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete seat",
                             IsActive = true,
@@ -409,7 +507,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 20,
+                            Id = 13,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View seat",
                             IsActive = true,
@@ -418,7 +516,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 14,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create student",
                             IsActive = true,
@@ -427,7 +525,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 15,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit student",
                             IsActive = true,
@@ -436,7 +534,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 23,
+                            Id = 16,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete student",
                             IsActive = true,
@@ -445,7 +543,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 17,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View student",
                             IsActive = true,
@@ -454,7 +552,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 18,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create registration",
                             IsActive = true,
@@ -463,7 +561,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 26,
+                            Id = 19,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit registration",
                             IsActive = true,
@@ -472,7 +570,7 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
-                            Id = 27,
+                            Id = 20,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View registration",
                             IsActive = true,
@@ -481,39 +579,372 @@ namespace Multi_Library_Management_Api.Migrations
                         },
                         new
                         {
+                            Id = 21,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete registration",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "DELETE_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View today due registration",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "TODAY_DUE_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View due registration",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "DUE_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Cancel registration",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "CANCEL_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Send bulk WhatsApp message",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "BULK_WHATSAPP_MESSAGE_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Send individual WhatsApp message",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "INDIVIDUAL_WHATSAPP_MESSAGE"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View payment history",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "PAYMENT_HISTORY"
+                        },
+                        new
+                        {
                             Id = 28,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create payment",
+                            Description = "Access cancel tab",
                             IsActive = true,
-                            Module = "Payment",
-                            Name = "CREATE_PAYMENT"
+                            Module = "Registration",
+                            Name = "CANCEL_TAB"
                         },
                         new
                         {
                             Id = 29,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View payment",
+                            Description = "Access renewal action tab",
                             IsActive = true,
-                            Module = "Payment",
-                            Name = "VIEW_PAYMENT"
+                            Module = "Registration",
+                            Name = "RENEWAL_ACTION_TAB"
                         },
                         new
                         {
                             Id = 30,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View reports",
+                            Description = "Send bill via WhatsApp",
                             IsActive = true,
-                            Module = "Report",
-                            Name = "VIEW_REPORT"
+                            Module = "Registration",
+                            Name = "SEND_BILL_WHATSAPP"
                         },
                         new
                         {
                             Id = 31,
                             CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Manage RFID gate access",
+                            Description = "Send bill via email",
                             IsActive = true,
-                            Module = "RFID",
-                            Name = "RFID_ACCESS"
+                            Module = "Registration",
+                            Name = "SEND_BILL_EMAIL"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Generate student registration QR",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "STUDENT_REGISTRATION_QR"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View expired registrations",
+                            IsActive = true,
+                            Module = "Registration",
+                            Name = "EXPIRED_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create attendance",
+                            IsActive = true,
+                            Module = "Attendance",
+                            Name = "CREATE_ATTENDANCE"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View attendance",
+                            IsActive = true,
+                            Module = "Attendance",
+                            Name = "VIEW_ATTENDANCE"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Generate attendance QR",
+                            IsActive = true,
+                            Module = "Attendance",
+                            Name = "ATTENDANCE_QR"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View seating layout",
+                            IsActive = true,
+                            Module = "SeatingLayout",
+                            Name = "VIEW_SEATING_LAYOUT"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Table registration",
+                            IsActive = true,
+                            Module = "SeatingLayout",
+                            Name = "TABLE_REGISTRATION"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create batch",
+                            IsActive = true,
+                            Module = "Batch",
+                            Name = "CREATE_BATCH"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit batch",
+                            IsActive = true,
+                            Module = "Batch",
+                            Name = "EDIT_BATCH"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete batch",
+                            IsActive = true,
+                            Module = "Batch",
+                            Name = "DELETE_BATCH"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View batch",
+                            IsActive = true,
+                            Module = "Batch",
+                            Name = "VIEW_BATCH"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create user",
+                            IsActive = true,
+                            Module = "UserManagement",
+                            Name = "CREATE_USER"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit user",
+                            IsActive = true,
+                            Module = "UserManagement",
+                            Name = "EDIT_USER"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete user",
+                            IsActive = true,
+                            Module = "UserManagement",
+                            Name = "DELETE_USER"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View user",
+                            IsActive = true,
+                            Module = "UserManagement",
+                            Name = "VIEW_USER"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create role",
+                            IsActive = true,
+                            Module = "RoleManagement",
+                            Name = "CREATE_ROLE"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit role",
+                            IsActive = true,
+                            Module = "RoleManagement",
+                            Name = "EDIT_ROLE"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete role",
+                            IsActive = true,
+                            Module = "RoleManagement",
+                            Name = "DELETE_ROLE"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View role",
+                            IsActive = true,
+                            Module = "RoleManagement",
+                            Name = "VIEW_ROLE"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View email settings",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_EMAIL_VIEW"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit email settings",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_EMAIL_EDIT"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View Razorpay settings",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_RAZORPAY_VIEW"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit Razorpay settings",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_RAZORPAY_EDIT"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View WhatsApp settings",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_WHATSAPP_VIEW"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Logout WhatsApp session",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_WHATSAPP_LOGOUT"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Initiate WhatsApp session",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_WHATSAPP_INITIATE"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View WhatsApp status",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_WHATSAPP_STATUS"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View attendance location",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_VIEW"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fetch attendance location",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_FETCH"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Update attendance location",
+                            IsActive = true,
+                            Module = "GeneralSettings",
+                            Name = "GENERAL_SETTING_ATTENDANCE_LOCATION_UPDATE"
                         });
                 });
 
@@ -633,115 +1064,319 @@ namespace Multi_Library_Management_Api.Migrations
                         new
                         {
                             Id = 9,
-                            PermissionId = 13,
+                            PermissionId = 9,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 10,
-                            PermissionId = 14,
+                            PermissionId = 10,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 11,
-                            PermissionId = 15,
+                            PermissionId = 11,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 12,
-                            PermissionId = 16,
+                            PermissionId = 12,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 13,
-                            PermissionId = 17,
+                            PermissionId = 13,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 14,
-                            PermissionId = 18,
+                            PermissionId = 14,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 15,
-                            PermissionId = 19,
+                            PermissionId = 15,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 16,
-                            PermissionId = 20,
+                            PermissionId = 16,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 17,
-                            PermissionId = 21,
+                            PermissionId = 17,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 18,
-                            PermissionId = 22,
+                            PermissionId = 18,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 19,
-                            PermissionId = 23,
+                            PermissionId = 19,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 20,
-                            PermissionId = 24,
+                            PermissionId = 20,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 21,
-                            PermissionId = 25,
+                            PermissionId = 21,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 22,
-                            PermissionId = 26,
+                            PermissionId = 22,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 23,
-                            PermissionId = 27,
+                            PermissionId = 23,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 24,
-                            PermissionId = 28,
+                            PermissionId = 24,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 25,
-                            PermissionId = 29,
+                            PermissionId = 25,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 26,
-                            PermissionId = 30,
+                            PermissionId = 26,
                             RoleId = 1
                         },
                         new
                         {
                             Id = 27,
+                            PermissionId = 27,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 28,
+                            PermissionId = 28,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 29,
+                            PermissionId = 29,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 30,
+                            PermissionId = 30,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 31,
                             PermissionId = 31,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 32,
+                            PermissionId = 32,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 33,
+                            PermissionId = 33,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 34,
+                            PermissionId = 34,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 35,
+                            PermissionId = 35,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 36,
+                            PermissionId = 36,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 37,
+                            PermissionId = 37,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 38,
+                            PermissionId = 38,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 39,
+                            PermissionId = 39,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 40,
+                            PermissionId = 40,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 41,
+                            PermissionId = 41,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 42,
+                            PermissionId = 42,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 43,
+                            PermissionId = 43,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 44,
+                            PermissionId = 44,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 45,
+                            PermissionId = 45,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 46,
+                            PermissionId = 46,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 47,
+                            PermissionId = 47,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 48,
+                            PermissionId = 48,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 49,
+                            PermissionId = 49,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 50,
+                            PermissionId = 50,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 51,
+                            PermissionId = 51,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 52,
+                            PermissionId = 52,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 53,
+                            PermissionId = 53,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 54,
+                            PermissionId = 54,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 55,
+                            PermissionId = 55,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 56,
+                            PermissionId = 56,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 57,
+                            PermissionId = 57,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 58,
+                            PermissionId = 58,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 59,
+                            PermissionId = 59,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 60,
+                            PermissionId = 60,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 61,
+                            PermissionId = 61,
                             RoleId = 1
                         });
                 });
@@ -769,6 +1404,10 @@ namespace Multi_Library_Management_Api.Migrations
                     b.Property<string>("DocumentType")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
                     b.Property<string>("FatherName")
                         .HasColumnType("longtext");
 
@@ -776,6 +1415,10 @@ namespace Multi_Library_Management_Api.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -792,10 +1435,6 @@ namespace Multi_Library_Management_Api.Migrations
 
                     b.Property<string>("Photo")
                         .HasColumnType("longtext");
-
-                    b.Property<string>("RFIDCode")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -819,11 +1458,18 @@ namespace Multi_Library_Management_Api.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("MonthlyAmount")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("RFIDCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .ValueGeneratedOnAdd()
@@ -850,6 +1496,8 @@ namespace Multi_Library_Management_Api.Migrations
                     b.HasIndex("BatchId");
 
                     b.HasIndex("CreatedBy");
+
+                    b.HasIndex("LibraryId");
 
                     b.HasIndex("StudentId");
 
@@ -889,6 +1537,12 @@ namespace Multi_Library_Management_Api.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<int>("XAxis")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YAxis")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -943,6 +1597,10 @@ namespace Multi_Library_Management_Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("ProfileImage")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -970,6 +1628,17 @@ namespace Multi_Library_Management_Api.Migrations
                             Password = "Admin@123",
                             RoleId = 1
                         });
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLocation", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
                 });
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.AttendanceLog", b =>
@@ -1016,12 +1685,48 @@ namespace Multi_Library_Management_Api.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.GeneralSetting", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+                });
+
+            modelBuilder.Entity("Multi_Library_Management_Api.Models.LibraryPermission", b =>
+                {
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany("LibraryPermissions")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Multi_Library_Management_Api.Models.Permission", "Permission")
+                        .WithMany("LibraryPermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+
+                    b.Navigation("Permission");
+                });
+
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Payment", b =>
                 {
                     b.HasOne("Multi_Library_Management_Api.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Multi_Library_Management_Api.Models.StudentRegistration", "StudentRegistration")
@@ -1031,6 +1736,8 @@ namespace Multi_Library_Management_Api.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");
+
+                    b.Navigation("Library");
 
                     b.Navigation("StudentRegistration");
                 });
@@ -1089,6 +1796,12 @@ namespace Multi_Library_Management_Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Multi_Library_Management_Api.Models.Library", "Library")
+                        .WithMany()
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Multi_Library_Management_Api.Models.Student", "Student")
                         .WithMany("StudentRegistrations")
                         .HasForeignKey("StudentId")
@@ -1104,6 +1817,8 @@ namespace Multi_Library_Management_Api.Migrations
                     b.Navigation("Batch");
 
                     b.Navigation("CreatedByUser");
+
+                    b.Navigation("Library");
 
                     b.Navigation("Student");
 
@@ -1156,6 +1871,8 @@ namespace Multi_Library_Management_Api.Migrations
                 {
                     b.Navigation("Floors");
 
+                    b.Navigation("LibraryPermissions");
+
                     b.Navigation("Roles");
 
                     b.Navigation("Students");
@@ -1165,6 +1882,8 @@ namespace Multi_Library_Management_Api.Migrations
 
             modelBuilder.Entity("Multi_Library_Management_Api.Models.Permission", b =>
                 {
+                    b.Navigation("LibraryPermissions");
+
                     b.Navigation("RolePermissions");
                 });
 
